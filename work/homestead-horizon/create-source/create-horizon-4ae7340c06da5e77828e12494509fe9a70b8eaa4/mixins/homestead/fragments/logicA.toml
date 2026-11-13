@@ -1,0 +1,102 @@
+# Logic mods, group A (stage 19 slice): Double Doors, Shulker Drops Two, Invisible Frames,
+# Accelerated Decay, No Animal Tempt Delay.
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last injection).
+# Every injection is an additional HEAD helper on a hook that already has other injections
+# (or, for the tempt goal, a narrow target); each helper acts only on its own subject.
+# Injection ids and module ids are unique within the bundle (prefix logica-).
+
+[[module]]
+id = "logica-doors"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_doors"
+source = "doubledoors.rs"
+
+[[module]]
+id = "logica-shulker"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_shulker"
+source = "shulkerdrops.rs"
+
+[[module]]
+id = "logica-frames"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_frames"
+source = "invisibleframes.rs"
+
+[[module]]
+id = "logica-decay"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_decay"
+source = "accdecay.rs"
+
+[[injection]]
+id = "logica-doors-click"
+hook = "right_click_block"
+hook_version = 1
+kind = "HEAD"
+helper = "doors_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "logica-shulker-drops"
+hook = "loot_drops"
+hook_version = 1
+kind = "HEAD"
+helper = "shulker_drops.rs"
+bindings = [
+  { name = "context", ty = "&horizon_client::mod_api::NativeLootDrops<'_>", value = "context" },
+  { name = "drops", ty = "&mut Vec<crate::items::ItemStack>", value = "&mut *drops" },
+]
+
+[[injection]]
+id = "logica-frames-interact"
+hook = "interact_entity"
+hook_version = 1
+kind = "HEAD"
+helper = "frames_interact.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "entity", ty = "i32", value = "entity" },
+  { name = "kind", ty = "&str", value = "kind" },
+  { name = "claimed", ty = "&mut bool", value = "&mut *claimed" },
+]
+
+[[injection]]
+id = "logica-decay-changed"
+hook = "block_changed"
+hook_version = 1
+kind = "HEAD"
+helper = "decay_changed.rs"
+bindings = [
+  { name = "level", ty = "&crate::game::GameLevel<'_>", value = "self" },
+  { name = "dimension", ty = "horizon_world::level::Dimension", value = "dimension" },
+  { name = "pos", ty = "horizon_core::position::BlockPos", value = "pos" },
+  { name = "old", ty = "horizon_world::registry::BlockStateId", value = "old" },
+  { name = "new", ty = "horizon_world::registry::BlockStateId", value = "new" },
+]
+
+[[injection]]
+id = "logica-decay-tick"
+hook = "level_tick_post"
+hook_version = 1
+kind = "HEAD"
+helper = "decay_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "dimension", ty = "&str", value = "dimension" },
+]
+
+# No Animal Tempt Delay: TemptGoal keeps a private 100 tick calm-down; the helper sits in the
+# goals module, where the field is visible, and clears it before every canUse.
+[[injection]]
+id = "logica-tempt-calm"
+target = "horizon_client_lib::mobs::goals::<Tempt as Goal>::can_use"
+kind = "HEAD"
+helper = "tempt_calm.rs"
+bindings = [
+  { name = "tempt", ty = "&mut Tempt", value = "&mut *self" },
+]

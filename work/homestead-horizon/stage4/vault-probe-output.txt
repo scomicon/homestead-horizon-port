@@ -1,0 +1,29 @@
+{"block_entities":59,"border":{"center":[0.0,0.0],"size":59999968.0},"carts":[],"chunks":49,"creative":false,"day_time":105805,"debug":{"advanced_tooltips":false,"chunk_borders":false,"clipboard":null,"hitboxes":false,"overlay":false,"pause_menu":true,"pause_on_lost_focus":true},"destroying":[],"dimension":"minecraft:overworld","dirty_light":0,"display":{"height":1080,"refresh_hz":144,"scale":1.0,"width":1920},"fangs_vertices":0,"fight":{"alive_crystals":0,"crystal_list":[],"crystals":0,"dragon":null,"exit_portal":null,"killed":false,"players":false,"respawn":null},"fishing":null,"fps":60.682098388671875,"frames":93,"generated_chunks":49,"heard":{"minecraft:entity.player.death":1},"held":null,"input":{"counts":{"agent":0,"game":0,"user":0},"events":0,"last_origin":null,"last_user_age_s":null,"recording":null,"replay":null,"user_since_agent":0},"keys":[],"lightning":{"bolts":0,"flash":0,"flashes":0,"struck":0},"lod":{"active_tiles":0,"cached_tiles":0,"detail_target_columns":0,"distance":0,"effective_distance":0,"far_detail":"full","levels":[],"pending_observations":0,"refined_samples":0,"refined_target_columns":0,"resident_quads":0,"sampled_target_tiles":0,"source":"none","source_attempted":false,"target_tiles":0,"terrain_distance":2},"maps":[],"meshed_sections":600,"mobs":5,"music":null,"name_tags":[],"objects":[],"offhand":null,"particles":{},"pending_chunks":0,"pending_uploads":0,"physical_keys":[],"pickups":{},"pitch":16.89615821838379,"player":{"food":11,"health":0.0,"max_health":null,"on_ground":false,"position":[152.5,90.0,36.5],"velocity":[0.0,0.0,0.0]},"projectiles":[],"render_distance":2,"renderer":{"arena_bytes":31457280,"backend":"Vulkan","culled_sections":[[0,7],0.0],"device_type":"discrete","drawn_sections":7,"driver":"AMD proprietary driver 25.10.30.02 (LLPC)","gpu":"AMD Radeon RX 7600","gpu_allocated_bytes":239885672,"gpu_culling":false,"gpu_culling_auto":"watching","gpu_culling_mode":"off","gpu_culling_offer":"Offered","gpu_fading":null,"gpu_frame":false,"gpu_occluding":false,"gpu_reserved_bytes":352493568,"packed_layout":[true,true],"present_mode":"Immediate","resident_sections":193,"section_draw_calls":1,"section_draws":11,"section_vertex_bytes":4689360,"size":[1280,720],"stats_lag":0,"uploaded_bytes":4689360,"vendor":"amd","vertex_bytes_split":[4689360,0]},"riding":null,"rockets":0,"screen":"dead","selected":1,"server":{"address":"local","chat":["HomesteadTest died"],"chunks":49,"dead_players":[],"decode_errors":0,"dimension":"minecraft:overworld","entities":{"minecraft:bat":1,"minecraft:creeper":1,"minecraft:enderman":1,"minecraft:experience_orb":15,"minecraft:skeleton":1,"minecraft:spider":1},"entity_id":1,"food":11,"game_mode":0,"health":0.0,"joined":true,"loaded":true,"lying_players":[],"name":"HomesteadTest","own_body":false,"player_equipment":[],"player_model":true,"player_positions":[],"players":["HomesteadTest"],"status":"Loading terrain...","text_display_vertices":0,"text_displays":0},"sidebar":null,"sounds":{"channels":0,"decoded":0,"decoded_mib":0,"events":[],"handles":0,"instances":0,"playing":0,"queued":0,"ticking":0,"used":[0,0]},"stopped_sounds":{},"streaming":{"decorating":0,"finishing":0,"generating":0,"lighting":0,"meshing":0,"protos":0,"queued":0},"target":null,"ticks":35,"tridents":0,"uptime_seconds":5.5542919,"using":null,"yaw":-180.0}
+{"chat":["The game is running normally"],"ok":true}
+{"chat":["No chunks were marked for force loading"],"ok":true}
+{"chat":["Successfully filled 236 block(s)"],"ok":true}
+{"chat":[],"ok":true}
+{"chat":["Game rule random_tick_speed is already set to 0"],"ok":true}
+{"chat":["Successfully filled 14 block(s)"],"ok":true}
+{"chat":["Successfully filled 77 block(s)"],"ok":true}
+{"chat":["Successfully filled 63 block(s)"],"ok":true}
+{"chat":["Changed the block at 150, 84, 36"],"ok":true}
+--- before
+"health":0.0
+{"chat":["Teleported HomesteadTest to 150.500000, 90.000000, 36.500000"],"ok":true}
+{"ok":true,"ticks":171}
+t+10: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":184}
+t+20: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":197}
+t+30: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":210}
+t+40: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":223}
+t+50: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":236}
+t+60: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":249}
+t+70: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false
+{"ok":true,"ticks":262}
+t+80: "health":0.0 "position":[150.5,90.0,36.5] "on_ground":false

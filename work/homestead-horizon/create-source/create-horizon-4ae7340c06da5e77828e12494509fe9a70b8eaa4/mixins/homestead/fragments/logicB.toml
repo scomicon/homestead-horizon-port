@@ -1,0 +1,22 @@
+# Logic mods, group B (stage19): Panda's Falling Tree's. Append this file to
+# mixins/homestead/horizon-mixin.toml (see fragments/logicB.md). Bridging Mod, Comforts and
+# SimpleHats are not here: docs/logic-b.md says why none of them can be built on the hooks
+# the engine has.
+
+[[module]]
+id = "falling-trees"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_falling_trees"
+source = "falling_trees.rs"
+
+[[injection]]
+id = "falling-trees-destroy"
+hook = "destroy_block"
+hook_version = 1
+kind = "HEAD"
+helper = "falling_trees_destroy.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]

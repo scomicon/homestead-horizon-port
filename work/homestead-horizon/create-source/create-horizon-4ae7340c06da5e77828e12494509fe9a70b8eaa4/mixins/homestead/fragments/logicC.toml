@@ -1,0 +1,63 @@
+# Logic mods, group C (stage19): Stack Refill and CraftingPad. Trade Cycling is not ported (see docs/logic-c.md).
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last injection).
+# Every injection is an additional HEAD helper on a hook other injections already use
+# (level_tick_pre, item_dropped, use_item) or a new head on `tick_craft_table`.
+
+[[module]]
+id = "stack-refill"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_stack_refill"
+source = "stack_refill.rs"
+
+[[module]]
+id = "craftingpad"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_craftingpad"
+source = "craftingpad.rs"
+
+# Stack Refill: once per tick, the local player's selected slot and off hand.
+[[injection]]
+id = "stack-refill-tick"
+hook = "level_tick_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "stack_refill_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# A thrown stack is not a used-up one.
+[[injection]]
+id = "stack-refill-drop"
+hook = "item_dropped"
+hook_version = 1
+kind = "HEAD"
+helper = "stack_refill_drop.rs"
+bindings = [
+  { name = "player", ty = "u128", value = "player" },
+  { name = "count", ty = "u32", value = "count" },
+]
+
+# CraftingPad: a right click in the air opens the 3x3 crafting menu.
+[[injection]]
+id = "craftingpad-use"
+hook = "use_item"
+hook_version = 1
+kind = "HEAD"
+helper = "craftingpad_use.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "stack", ty = "&crate::items::ItemStack", value = "stack" },
+  { name = "claimed", ty = "&mut bool", value = "&mut *claimed" },
+]
+
+# CraftingPad: the menu of a pad has no block, so the table's reach and block check is skipped.
+[[injection]]
+id = "craftingpad-table"
+target = "horizon_client::game::storage::Game<'_>::tick_craft_table"
+kind = "HEAD"
+cancellable = true
+helper = "craftingpad_table.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

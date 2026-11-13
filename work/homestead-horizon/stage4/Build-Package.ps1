@@ -1,14 +1,16 @@
 #requires -Version 7.0
 # Assembles outputs/<Name> from the accepted candidate client.
 # Refuses to run unless every acceptance receipt passed on the candidate binary.
-param([string] $Name = 'homestead-horizon-stage18')
+param([string] $Name = 'homestead-horizon-stage19')
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $workspace = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $work = Join-Path $workspace 'work/homestead-horizon'
 $candidate = Join-Path $PSScriptRoot 'candidate/client'
 $final = Join-Path $workspace ('outputs/' + $Name)
-$stage3 = Join-Path $workspace 'outputs/homestead-horizon-stage3'
+$stage3 = @('stage3','stage18','stage17') | ForEach-Object { Join-Path $workspace ('outputs/homestead-horizon-'+$_) } | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if (-not $stage3) { throw 'No base package (stage3, stage18 or stage17) found in outputs.' }
+$stage3IsBase = (Split-Path $stage3 -Leaf) -eq 'homestead-horizon-stage3'
 $create = (Get-Content -LiteralPath (Join-Path $work 'create-source-path.txt') -Raw).Trim()
 $git = Join-Path $workspace 'work/mingit/cmd/git.exe'
 $utf8 = [Text.UTF8Encoding]::new($false)
@@ -17,7 +19,7 @@ if (-not $final.StartsWith($workspace + [IO.Path]::DirectorySeparatorChar, [Stri
 
 # 1. Receipts must belong to this very binary.
 $binary = (Get-FileHash -LiteralPath (Join-Path $candidate 'horizon-client.exe') -Algorithm SHA256).Hash.ToLowerInvariant()
-$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json')
+$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json','run-logica-result.json','run-logicb-result.json','run-logicd-result.json')
 foreach ($name in $runs) {
     $r = Get-Content -LiteralPath (Join-Path $PSScriptRoot $name) -Raw | ConvertFrom-Json
     if (-not $r.passed) { throw "Receipt did not pass: $name" }
@@ -85,17 +87,19 @@ foreach ($n in 'CREATE-HORIZON-LICENSE.txt','HORIZON-LICENSE.txt') { Copy-Item -
 Copy-Item -LiteralPath (Join-Path $create 'THIRD_PARTY_NOTICES.md') (Join-Path $final 'source/CREATE-HORIZON-NOTICES.md')
 
 # 5. Launcher pieces carried over from stage 3.
-Copy-Item -Path (Join-Path $stage3 'mods/*') (Join-Path $final 'mods') -Recurse
+if ($stage3IsBase) { Copy-Item -Path (Join-Path $stage3 'mods/*') (Join-Path $final 'mods') -Recurse } else { Copy-Item -Path (Join-Path $stage3 'mods/create_oxidized-*.hmod') (Join-Path $final 'mods') }
 # Content mods built for this stage (Farmer's Delight); only what is accepted ships.
 Copy-Item -Path (Join-Path $PSScriptRoot 'extra-mods/*.hmod') (Join-Path $final 'mods')
 Copy-Item -Path (Join-Path $stage3 'datapacks/*') (Join-Path $final 'datapacks') -Recurse
 Copy-Item -LiteralPath (Join-Path $stage3 'review/world.zip') (Join-Path $final 'review')
-Copy-Item -LiteralPath (Join-Path $stage3 'local-settings.json') $final
+# No local-settings.json is shipped (it holds the user's own paths); Install-Homestead.cmd writes it.
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/local-settings.example.json') $final
+foreach ($f in 'Install-Homestead.ps1','Install-Homestead.cmd') { Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('package/' + $f)) $final }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/Play-Create.cmd') $final
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/Start-Homestead.ps1') $final
 
 # 6. Acceptance harness and receipts.
-foreach ($f in 'Run-Acceptance.ps1','Start-Test.ps1','Prepare-Candidate.ps1','Build-Package.ps1') { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $f) (Join-Path $final 'acceptance') }
+foreach ($f in 'Run-Acceptance.ps1','Start-Test.ps1','Prepare-Candidate.ps1','Build-Package.ps1','Build-Cache.ps1') { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $f) (Join-Path $final 'acceptance') }
 Copy-Item -Path (Join-Path $PSScriptRoot 'acceptance/Test-*.ps1') (Join-Path $final 'acceptance')
 foreach ($name in $runs) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) (Join-Path $final 'validation') }
 foreach ($f in Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'runtime/game') -Filter 'stage*-result.json') { Copy-Item -LiteralPath $f.FullName (Join-Path $final 'validation') }
@@ -132,7 +136,10 @@ $provenance.local_changes = @(
     'Farmer''s Delight: crops (cabbage, onion, tomato, rice), rich soil, organic compost (stage 24)',
     'Farmer''s Delight: feasts, pies, drinks, Comfort effect (stage 24)',
 'Create: value board admission fix (Creative Motor speed), original-asset import fix, creative tabs for all content mods (stage 31)',
-    '45 carried data-tier mods packed as .hmod and loaded by the client (stage 25)'
+    '45 carried data-tier mods packed as .hmod and loaded by the client (stage 25)',
+    'Homestead logic A: Double Doors, Shulker Drops Two, Invisible Frames, Accelerated Decay, No Animal Tempt Delay (stage 25)',
+    'Homestead logic B: Falling Trees (stage 25)',
+    'Homestead logic D: Universal Graves, SpawnFilter (stage 25)'
 )
 [IO.File]::WriteAllText((Join-Path $final 'provenance.json'), ($provenance | ConvertTo-Json -Depth 8) + [Environment]::NewLine, $utf8)
 Write-Output "Assembled $final"

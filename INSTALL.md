@@ -33,6 +33,8 @@
 Скрипт проверяет файл Create в Homestead, записывает `local-settings.json` и предлагает запустить игру. Без вопросов: `Install-Homestead.ps1 -OurBuild <путь> -Homestead <путь> -Launch`. Только проверка без записи: ключ `-CheckOnly`.
 
 
+Готовые сборки больше **не содержат `local-settings.json`**: в нём лежали бы пути вашего компьютера. Файл создаёт `Install-Homestead.cmd` (или вы копируете `local-settings.example.json` в `local-settings.json` и заполняете сами).
+
 **Как сменить ник.** По умолчанию в обзорном мире игрок называется `HomesteadTest`. Ник можно задать при установке (вопрос «Ник»), ключом `Install-Homestead.ps1 -PlayerName <ник>`, полем `playerName` в `local-settings.json` или ключом `Start-Homestead.ps1 -Name <ник>`. Допустимо 3-16 символов: латинские буквы, цифры, `_`. Инвентарь и прогресс в мире привязаны к нику: после смены ника в старом мире вы будете другим игроком.
 
 **Вручную.**

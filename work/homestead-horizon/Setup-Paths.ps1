@@ -1,4 +1,4 @@
-#requires -Version 7.0
+﻿#requires -Version 7.0
 # Создаёт три файла с путями, которые читают скрипты сборки, и проверяет, что на месте
 # инструменты и исходники. Запускайте из любого места:
 #   pwsh work\homestead-horizon\Setup-Paths.ps1

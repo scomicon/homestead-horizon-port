@@ -18,7 +18,7 @@ if (Test-Path $skipFile) {
     $json = Get-Content $skipFile -Raw | ConvertFrom-Json
     foreach ($p in $json.PSObject.Properties) { $skip[$p.Name] = @($p.Value.paths) }
 }
-Get-ChildItem $extra -Filter '*-horizon.*.hmod' | Where-Object { $_.Name -notlike 'farmersdelight-*' } | Remove-Item -Force
+Get-ChildItem $extra -Filter '*-horizon.*.hmod' | Where-Object { $_.Name -notlike 'farmersdelight-*' -and $_.Name -notlike 'craftingpad-*' -and $_.Name -notlike 'universal_graves-*' } | Remove-Item -Force
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $built = @()

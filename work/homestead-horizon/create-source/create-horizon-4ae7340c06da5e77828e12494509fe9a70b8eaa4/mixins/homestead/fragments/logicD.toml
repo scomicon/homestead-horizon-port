@@ -1,0 +1,98 @@
+# Logic mods group D (stage19 slice): SpawnFilter and Universal Graves. Grind Enchantments is not here:
+# see docs/logic-d.md (its take, input and cost rules have no hook).
+#
+# SpawnFilter: a blocked spawn (water, lava, magma, fire, wool, fluids, leaves; ocean and river biomes) is moved to
+# the nearest safe column, or given a stone platform.
+[[module]]
+id = "spawnfilter"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_spawnfilter"
+source = "spawnfilter.rs"
+
+[[injection]]
+id = "spawnfilter-respawn"
+hook = "player_respawned"
+hook_version = 1
+kind = "HEAD"
+helper = "spawnfilter_respawn.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+]
+
+[[injection]]
+id = "spawnfilter-login"
+hook = "player_logged_in"
+hook_version = 1
+kind = "HEAD"
+helper = "spawnfilter_login.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+]
+
+# Universal Graves: the dying player's inventory goes into a grave block (universal_graves:grave of
+# tools/graves_content.py) protected for 900 s from everyone but its owner and operators.
+[[module]]
+id = "graves"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_graves"
+source = "graves.rs"
+
+[[injection]]
+id = "graves-entity"
+hook = "block_entity"
+hook_version = 1
+kind = "HEAD"
+helper = "graves_entity.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "entity", ty = "&mut Option<(String, horizon_world::nbt::Compound)>", value = "&mut *entity" },
+]
+
+[[injection]]
+id = "graves-container"
+hook = "block_entity_container"
+hook_version = 1
+kind = "HEAD"
+helper = "graves_container.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "container", ty = "&mut Option<crate::containers::ModContainer>", value = "&mut *container" },
+]
+
+[[injection]]
+id = "graves-loot"
+hook = "loot_drops"
+hook_version = 1
+kind = "HEAD"
+helper = "graves_loot.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "context", ty = "&horizon_client::mod_api::NativeLootDrops<'_>", value = "context" },
+  { name = "drops", ty = "&mut Vec<crate::items::ItemStack>", value = "&mut *drops" },
+]
+
+[[injection]]
+id = "graves-right-click"
+hook = "right_click_block"
+hook_version = 1
+kind = "HEAD"
+helper = "graves_right_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "graves-destroy"
+hook = "destroy_block"
+hook_version = 1
+kind = "HEAD"
+helper = "graves_destroy.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]

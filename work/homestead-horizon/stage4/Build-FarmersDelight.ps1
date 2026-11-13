@@ -8,7 +8,7 @@ $create = (Get-Content -LiteralPath (Join-Path $work 'create-source-path.txt') -
 $pack = Get-ChildItem (Join-Path $workspace 'work/horizon-source') -Directory | Select-Object -First 1
 $tool = Join-Path $pack.FullName 'target/fast/horizon-port-pack.exe'
 $python = Join-Path $workspace 'work/llvm-mingw/llvm-mingw-20261104-msvcrt-x86_64/python/bin/python.exe'
-$resources = (Get-Content -LiteralPath (Join-Path $PSScriptRoot '../../../local-settings.json') -Raw | ConvertFrom-Json).resources
+$resources = (Get-Content -LiteralPath (Join-Path $PSScriptRoot '../../../outputs/homestead-horizon-stage7/local-settings.json') -Raw | ConvertFrom-Json).resources
 $version = 'horizon.9'
 $fd = Join-Path $work 'fd-carry'
 New-Item -ItemType Directory -Force $fd | Out-Null

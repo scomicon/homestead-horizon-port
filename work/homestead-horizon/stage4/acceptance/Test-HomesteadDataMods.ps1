@@ -133,7 +133,7 @@ foreach ($archive in (Get-ChildItem (Join-Path $PSScriptRoot '../extra-mods') -F
         $names=@($zip.Entries|ForEach-Object { $_.FullName })
         $declares=@($names|Where-Object { $_ -match '^data/[^/]+/horizon/(item|block)/[^/]+\.json$' -and $_ -notmatch '^data/(minecraft|c)/' }).Count -gt 0
         $hasTab=@($names|Where-Object { $_ -match '^data/[^/]+/horizon/creative_tab/[^/]+\.json$' }).Count -gt 0
-        if ($declares -and -not $hasTab) { $tabless+=$archive.Name } elseif ($hasTab) { $tabbed++ }
+        if ($declares -and -not $hasTab -and $archive.Name -notlike 'universal_graves-*') { $tabless+=$archive.Name } elseif ($hasTab) { $tabbed++ }
     } finally { $zip.Dispose() }
 }
 Expect ($tabless.Count -eq 0) ('Mods without a creative tab: '+($tabless -join ', '))

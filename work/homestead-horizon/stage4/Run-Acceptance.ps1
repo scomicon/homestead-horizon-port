@@ -2,7 +2,7 @@
 # Stage 4 belt-funnel acceptance in a disposable world. Keep this parent shell
 # alive until horizon-ctl quit and the native process exit.
 [CmdletBinding()]
-param([switch] $ReloadOnly,[switch] $Vault,[switch] $Harvest,[switch] $Tweaks,[switch] $Rain,[switch] $Days,[switch] $FarmersDelight,[switch] $Decor,[switch] $Arm,[switch] $Link,[switch] $Points,[switch] $Tank,[switch] $Pipes,[switch] $Steam,[switch] $Board,[switch] $Stove,[switch] $Skillet,[switch] $Pot,[switch] $Switches,[switch] $Displays,[switch] $Cannon,[switch] $Packager,[switch] $Controller,[switch] $SchematicTools,[switch] $Stock,[switch] $DataMods,[switch] $Crops,[switch] $Feasts,[switch] $Motor)
+param([switch] $ReloadOnly,[switch] $Vault,[switch] $Harvest,[switch] $Tweaks,[switch] $Rain,[switch] $Days,[switch] $FarmersDelight,[switch] $Decor,[switch] $Arm,[switch] $Link,[switch] $Points,[switch] $Tank,[switch] $Pipes,[switch] $Steam,[switch] $Board,[switch] $Stove,[switch] $Skillet,[switch] $Pot,[switch] $Switches,[switch] $Displays,[switch] $Cannon,[switch] $Packager,[switch] $Controller,[switch] $SchematicTools,[switch] $Stock,[switch] $DataMods,[switch] $Crops,[switch] $Feasts,[switch] $Motor,[switch] $LogicA,[switch] $LogicB,[switch] $LogicC,[switch] $LogicD)
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 # Game commands need '.' decimals whatever the Windows locale is.
@@ -18,7 +18,7 @@ $receiptPrefix=if ($Vault) {'stage5-itemvault-'} else {'stage4-beltfunnels-'}
 $report=[ordered]@{passed=$false;process_id=$run.process_id;reload_only=[bool]$ReloadOnly;phases=@();
     binary_sha256=(Get-FileHash -LiteralPath $run.binary -Algorithm SHA256).Hash.ToLowerInvariant();
     shutdown=[ordered]@{requested=$false;process_exited=$false}}
-$reportName=if ($Motor) {'run-motor-result.json'} elseif ($DataMods) {'run-datamods-result.json'} elseif ($Crops) {'run-crops-result.json'} elseif ($Feasts) {'run-feasts-result.json'} elseif ($Controller) {'run-controller-result.json'} elseif ($SchematicTools) {'run-schematic-tools-result.json'} elseif ($Stock) {'run-stock-result.json'} elseif ($Switches) {'run-switches-result.json'} elseif ($Motor) {
+$reportName=if ($LogicA) {'run-logica-result.json'} elseif ($LogicB) {'run-logicb-result.json'} elseif ($LogicC) {'run-logicc-result.json'} elseif ($LogicD) {'run-logicd-result.json'} elseif ($Motor) {'run-motor-result.json'} elseif ($DataMods) {'run-datamods-result.json'} elseif ($Crops) {'run-crops-result.json'} elseif ($Feasts) {'run-feasts-result.json'} elseif ($Controller) {'run-controller-result.json'} elseif ($SchematicTools) {'run-schematic-tools-result.json'} elseif ($Stock) {'run-stock-result.json'} elseif ($Switches) {'run-switches-result.json'} elseif ($Motor) {
 $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadMotor.ps1'),'Motor','stage31-motor-'))
 } elseif ($Displays) {'run-displays-result.json'} elseif ($Cannon) {'run-cannon-result.json'} elseif ($Packager) {'run-packager-result.json'} elseif ($Pot) {'run-pot-result.json'} elseif ($Skillet) {'run-skillet-result.json'} elseif ($Stove) {'run-stove-result.json'} elseif ($Board) {'run-board-result.json'} elseif ($Steam) {'run-steam-result.json'} elseif ($Pipes) {'run-pipes-result.json'} elseif ($Tank) {'run-tank-result.json'} elseif ($Points) {'run-points-result.json'} elseif ($Link) {'run-link-result.json'} elseif ($Arm) {'run-arm-result.json'} elseif ($Decor) {'run-decor-result.json'} elseif ($FarmersDelight) {'run-fd-result.json'} elseif ($Days) {'run-days-result.json'} elseif ($Rain) {'run-rain-result.json'} elseif ($Tweaks) {'run-tweaks-result.json'} elseif ($Harvest) {'run-harvest-result.json'} elseif ($Vault -and $ReloadOnly) {'run-vault-reload-result.json'} elseif ($Vault) {'run-vault-result.json'} elseif ($ReloadOnly) {'run-reload-result.json'} else {'run-flow-result.json'}
 function Invoke-Control([string[]] $Words,[int] $TimeoutMs=150000) {
@@ -49,7 +49,15 @@ try {
     $beltScript=Join-Path $PSScriptRoot 'acceptance/Test-HomesteadBeltFunnels.ps1'
     $runs=@()
     $harvestScript=Join-Path $PSScriptRoot 'acceptance/Test-HomesteadHarvest.ps1'
-    if ($Switches) {
+    if ($LogicA) {
+        $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadLogicA.ps1'),'LogicA','stage25-logica-'))
+    } elseif ($LogicB) {
+        $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadLogicB.ps1'),'LogicB','stage25-logicb-'))
+    } elseif ($LogicC) {
+        $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadLogicC.ps1'),'LogicC','stage25-logicc-'))
+    } elseif ($LogicD) {
+        $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadLogicD.ps1'),'LogicD','stage25-logicd-'))
+    } elseif ($Switches) {
         $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadSwitches.ps1'),'Switches','stage20-switches-'))
     } elseif ($DataMods) {
         $runs=@(,@((Join-Path $PSScriptRoot 'acceptance/Test-HomesteadDataMods.ps1'),'DataMods','stage25-datamods-'))

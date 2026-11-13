@@ -19,7 +19,7 @@
 
 ## Состояние
 
-Версия сборки: **stage18**. Всё принято автоматическими тестами в игре (31 набор приёмки на одном бинарнике), но на живом клиенте проверено только в творческом режиме. Выживание, внешний вид и многие рецепты не проверены.
+Версия сборки: **stage19**. Всё принято автоматическими тестами в игре (34 набора приёмки на одном бинарнике), но на живом клиенте проверено только в творческом режиме. Выживание, внешний вид и многие рецепты не проверены.
 
 | Область | Что есть |
 | --- | --- |
@@ -28,8 +28,15 @@
 | Create: автоматизация | Mechanical Arm и точки, Redstone Link, выключатели и Nixie, Display Link и Board, Schematicannon и Schematic Table, Packager и Factory Gauge, Linked Controller, Schematic и Schematic and Quill, Stock Link и Frogport |
 | Create: декор | около 350 декоративных блоков на ванильных шаблонах |
 | Farmer's Delight | еда, разделочная доска, печь, сковорода, котёл с экраном, посевы, пиры |
-| Мелкие моды логики | Right Click Harvest, Secure Crops, Too Cheap!, Preferred Gamerules, Crops Love Rain, Better Days |
+| Мелкие моды логики | Right Click Harvest, Secure Crops, Too Cheap!, Preferred Gamerules, Crops Love Rain, Better Days, Double Doors, Shulker Drops Two, Invisible Frames, Accelerated Decay, No Animal Tempt Delay, Falling Trees, SpawnFilter, Universal Graves |
 | Контент-моды | 45 «данных» модов упаковываются как оболочки (блоки без поведения, структуры, рецепты), у каждого своя вкладка в креативе |
+
+**Не перенесено или отключено (мелкие моды логики):**
+
+- **Stack Refill и CraftingPad отключены.** Их хуки выполняются на серверном потоке, где у игры нет локального игрока, экрана и инвентаря, поэтому в одиночной игре они ничего не делают. Код оставлен в репозитории, в сборку не входит (`docs/logic-c.md`).
+- **Trade Cycling, Grind Enchantments, Bridging Mod, Comforts, SimpleHats** требуют хуков движка, которых нет (торговля жителей, меню наждака, клиентский луч, сон для хозяина игры, слоты Accessories).
+- **Эффект Comfort и Nourishment** идут через тот же серверный хук. В одиночной игре Comfort, скорее всего, не лечит, это не проверено.
+- **Проверено не полностью:** невидимость рамок (сокет управления не видит рамки), смерть игрока и SpawnFilter (тест не умеет респавнить игрока).
 
 **Не сделано:** поезда Create, копикэты, предпросмотр схем, большинство экранов (GUI) Create, сущности и рендер модов, зависящих от слоя сущностей в Horizon mod API. Полный список и известные долги: `work/homestead-horizon/stage4/research/roadmap.md` и `docs/` внутри `create-source`.
 

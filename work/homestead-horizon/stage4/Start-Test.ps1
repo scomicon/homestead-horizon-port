@@ -15,7 +15,9 @@ if ($World -notmatch '^HomesteadAutomation[A-Za-z0-9_-]*$') { throw 'Use a dispo
 $save=Join-Path $game ('saves/'+$World)
 New-Item -ItemType Directory -Force -Path $game|Out-Null
 if (-not (Test-Path -LiteralPath $save)) {
-    Expand-Archive -LiteralPath (Join-Path $workspace 'outputs/homestead-horizon-stage2/review/world.zip') -DestinationPath $save
+    $worldZip=@('stage2','stage18','stage17') | ForEach-Object { Join-Path $workspace ('outputs/homestead-horizon-'+$_+'/review/world.zip') } | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    if (-not $worldZip) { throw 'No review world.zip found in outputs (stage2, stage18 or stage17).' }
+    Expand-Archive -LiteralPath $worldZip -DestinationPath $save
 }
 # The stage2 review save has the 27-recipe pack already enabled. Update only
 # this owned copy before startup so the new zero-duration recipe is loaded.
@@ -39,7 +41,8 @@ if (-not (Test-Path -LiteralPath $privateJar)) {
 if ((Get-FileHash -LiteralPath $privateJar -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'a613603fb08d967c5a4138d1adb7374c4a347b91e489fe21579a4cff4f40105a') {
     throw 'The owned private Create resource input does not match the verified Homestead JAR.'
 }
-$addon=Join-Path $workspace 'outputs/homestead-horizon-stage2/mods/create_oxidized-0.1.1-horizon.1.hmod'
+$addon=@('stage2','stage18','stage17') | ForEach-Object { Join-Path $workspace ('outputs/homestead-horizon-'+$_+'/mods/create_oxidized-0.1.1-horizon.1.hmod') } | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if (-not $addon) { throw 'create_oxidized hmod not found in outputs.' }
 Copy-Item -LiteralPath $addon -Destination $mods -Force
 $enabled=@('mod.create:true','mod.create_oxidized:true')
 $extra=Join-Path $PSScriptRoot 'extra-mods'
