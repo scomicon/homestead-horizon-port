@@ -1,0 +1,57 @@
+{
+  "variants": {
+    "mount=floor_south": {
+      "model": "create:block/nixie_tube/block"
+    },
+    "mount=floor_west": {
+      "model": "create:block/nixie_tube/block",
+      "y": 90
+    },
+    "mount=floor_north": {
+      "model": "create:block/nixie_tube/block",
+      "y": 180
+    },
+    "mount=floor_east": {
+      "model": "create:block/nixie_tube/block",
+      "y": 270
+    },
+    "mount=ceiling_south": {
+      "model": "create:block/nixie_tube/block",
+      "x": 180
+    },
+    "mount=ceiling_west": {
+      "model": "create:block/nixie_tube/block",
+      "x": 180,
+      "y": 90
+    },
+    "mount=ceiling_north": {
+      "model": "create:block/nixie_tube/block",
+      "x": 180,
+      "y": 180
+    },
+    "mount=ceiling_east": {
+      "model": "create:block/nixie_tube/block",
+      "x": 180,
+      "y": 270
+    },
+    "mount=wall_north": {
+      "model": "create:block/nixie_tube/block",
+      "x": 90
+    },
+    "mount=wall_east": {
+      "model": "create:block/nixie_tube/block",
+      "x": 90,
+      "y": 90
+    },
+    "mount=wall_south": {
+      "model": "create:block/nixie_tube/block",
+      "x": 90,
+      "y": 180
+    },
+    "mount=wall_west": {
+      "model": "create:block/nixie_tube/block",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

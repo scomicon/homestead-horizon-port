@@ -1,0 +1,26 @@
+{
+  "template": "minecraft:iron_block",
+  "item": true,
+  "properties": {
+    "hardness": 3.0,
+    "explosion_resistance": 1200.0,
+    "requires_tool": true,
+    "sounds": "minecraft:netherite_block"
+  },
+  "state_properties": {
+    "axis": {
+      "type": "enum",
+      "values": [
+        "x",
+        "z"
+      ]
+    },
+    "large": {
+      "type": "boolean"
+    }
+  },
+  "default_state": {
+    "axis": "z",
+    "large": "false"
+  }
+}

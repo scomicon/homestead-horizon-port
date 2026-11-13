@@ -1,0 +1,35 @@
+# Farmer's Delight feasts, pies and the cake cut: servings, bites, knife (stage16 slice).
+[[module]]
+id = "feast"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_feast"
+source = "feast.rs"
+
+[[injection]]
+id = "feast-right-click"
+hook = "right_click_block"
+hook_version = 1
+kind = "HEAD"
+helper = "feast_right_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# Farmer's Delight Comfort effect: slow natural regeneration while the effect lasts.
+[[module]]
+id = "comfort"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_comfort"
+source = "comfort.rs"
+
+[[injection]]
+id = "comfort-tick"
+hook = "level_tick_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "comfort_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

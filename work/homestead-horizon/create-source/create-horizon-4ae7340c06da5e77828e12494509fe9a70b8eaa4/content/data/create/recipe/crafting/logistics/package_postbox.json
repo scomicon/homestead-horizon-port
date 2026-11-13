@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:chest",
+    "K": "create:packager"
+  },
+  "pattern": [
+    "B",
+    "K"
+  ],
+  "result": {
+    "id": "create:package_postbox",
+    "count": 1
+  },
+  "show_notification": true
+}

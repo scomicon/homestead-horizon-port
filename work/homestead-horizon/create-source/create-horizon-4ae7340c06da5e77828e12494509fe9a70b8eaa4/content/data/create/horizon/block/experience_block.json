@@ -1,0 +1,13 @@
+{
+  "template": "minecraft:emerald_block",
+  "item": true,
+  "properties": {
+    "map_color": 7,
+    "light": 15,
+    "requires_tool": true,
+    "sounds": "minecraft:amethyst_block"
+  },
+  "components": {
+    "minecraft:rarity": "uncommon"
+  }
+}

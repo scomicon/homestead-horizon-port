@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "E": "create:electron_tube",
+    "B": "create:brass_sheet"
+  },
+  "pattern": [
+    "E",
+    "B"
+  ],
+  "result": {
+    "id": "create:redstone_link",
+    "count": 2
+  },
+  "show_notification": true
+}

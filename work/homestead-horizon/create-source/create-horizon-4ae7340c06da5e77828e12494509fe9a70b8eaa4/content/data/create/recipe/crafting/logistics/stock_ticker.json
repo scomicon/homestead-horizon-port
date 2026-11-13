@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "L": "create:stock_link",
+    "C": "create:brass_casing"
+  },
+  "pattern": [
+    "G",
+    "L",
+    "C"
+  ],
+  "result": {
+    "id": "create:stock_ticker",
+    "count": 1
+  },
+  "show_notification": true
+}

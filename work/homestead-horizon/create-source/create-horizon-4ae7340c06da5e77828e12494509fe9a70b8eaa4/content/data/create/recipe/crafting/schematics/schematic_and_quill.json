@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "create:empty_schematic",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "create:schematic_and_quill"
+  }
+}

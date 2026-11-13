@@ -1,0 +1,7 @@
+{
+  "template": "minecraft:glass_pane",
+  "item": true,
+  "properties": {
+    "map_color": 21
+  }
+}

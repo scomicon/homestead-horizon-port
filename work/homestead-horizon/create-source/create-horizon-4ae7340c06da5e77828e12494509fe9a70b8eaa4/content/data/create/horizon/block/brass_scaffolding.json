@@ -1,0 +1,7 @@
+{
+  "template": "minecraft:scaffolding",
+  "item": true,
+  "properties": {
+    "map_color": 40
+  }
+}

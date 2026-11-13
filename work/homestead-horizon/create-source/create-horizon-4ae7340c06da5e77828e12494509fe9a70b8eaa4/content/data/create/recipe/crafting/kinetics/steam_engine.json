@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "create:golden_sheet",
+    "P": "minecraft:piston",
+    "C": "create:copper_casing",
+    "S": "create:shaft"
+  },
+  "pattern": [
+    "G ",
+    "PS",
+    "C "
+  ],
+  "result": {
+    "id": "create:steam_engine"
+  },
+  "show_notification": true
+}

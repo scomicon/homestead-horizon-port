@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "L": "minecraft:lever",
+    "C": "create:andesite_casing",
+    "R": "create:redstone_link"
+  },
+  "pattern": [
+    "L",
+    "C",
+    "R"
+  ],
+  "result": {
+    "id": "create:linked_controller"
+  },
+  "show_notification": true
+}

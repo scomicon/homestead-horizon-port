@@ -1,0 +1,36 @@
+{
+  "template": "minecraft:barrel",
+  "item": true,
+  "properties": {
+    "hardness": 2.0,
+    "explosion_resistance": 6.0,
+    "requires_tool": true,
+    "occludes": false,
+    "render_shape": "MODEL",
+    "sounds": "minecraft:copper_block"
+  },
+  "shapes": {
+    "default": [
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        1
+      ]
+    ]
+  },
+  "collision_shapes": {
+    "default": [
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        1
+      ]
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "parent": "create:block/waxed_exposed_copper_tile_stairs",
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    }
+  }
+}

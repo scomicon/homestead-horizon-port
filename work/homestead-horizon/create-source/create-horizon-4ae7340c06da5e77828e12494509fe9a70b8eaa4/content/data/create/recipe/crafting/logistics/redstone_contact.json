@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "I": "create:iron_sheet",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "I",
+    "R",
+    "I"
+  ],
+  "result": {
+    "id": "create:redstone_contact",
+    "count": 2
+  },
+  "show_notification": true
+}

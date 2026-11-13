@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "facing=north,inverted=false,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 180
+    },
+    "facing=north,inverted=false,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 180
+    },
+    "facing=north,inverted=false,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 180
+    },
+    "facing=north,inverted=false,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 180
+    },
+    "facing=north,inverted=true,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 180
+    },
+    "facing=south,inverted=false,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/off"
+    },
+    "facing=south,inverted=false,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/on"
+    },
+    "facing=south,inverted=false,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/off"
+    },
+    "facing=south,inverted=false,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/on"
+    },
+    "facing=south,inverted=true,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/on"
+    },
+    "facing=south,inverted=true,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/off"
+    },
+    "facing=south,inverted=true,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/on"
+    },
+    "facing=south,inverted=true,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/off"
+    },
+    "facing=west,inverted=false,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 90
+    },
+    "facing=west,inverted=false,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 90
+    },
+    "facing=west,inverted=false,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 90
+    },
+    "facing=west,inverted=false,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 90
+    },
+    "facing=west,inverted=true,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 90
+    },
+    "facing=east,inverted=false,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 270
+    },
+    "facing=east,inverted=false,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 270
+    },
+    "facing=east,inverted=false,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/off",
+      "y": 270
+    },
+    "facing=east,inverted=false,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/on",
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=false,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=false,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,powering=false": {
+      "model": "create:block/pulse_timer/on",
+      "y": 270
+    },
+    "facing=east,inverted=true,powered=true,powering=true": {
+      "model": "create:block/pulse_timer/off",
+      "y": 270
+    }
+  }
+}

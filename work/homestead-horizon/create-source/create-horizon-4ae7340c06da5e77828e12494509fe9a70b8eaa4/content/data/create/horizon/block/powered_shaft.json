@@ -1,0 +1,63 @@
+{
+  "template": "minecraft:glass",
+  "item": false,
+  "properties": {
+    "hardness": 3.0,
+    "explosion_resistance": 6.0,
+    "requires_tool": true,
+    "render_shape": "ENTITYBLOCK_ANIMATED",
+    "sounds": "minecraft:copper_block"
+  },
+  "state_properties": {
+    "axis": {
+      "type": "enum",
+      "values": [
+        "x",
+        "y",
+        "z"
+      ]
+    },
+    "waterlogged": {
+      "type": "boolean"
+    }
+  },
+  "default_state": {
+    "axis": "y",
+    "waterlogged": "false"
+  },
+  "shapes": {
+    "property": "axis",
+    "values": {
+      "x": [
+        [
+          0,
+          0.375,
+          0.375,
+          1,
+          0.625,
+          0.625
+        ]
+      ],
+      "y": [
+        [
+          0.375,
+          0,
+          0.375,
+          0.625,
+          1,
+          0.625
+        ]
+      ],
+      "z": [
+        [
+          0.375,
+          0.375,
+          0,
+          0.625,
+          0.625,
+          1
+        ]
+      ]
+    }
+  }
+}

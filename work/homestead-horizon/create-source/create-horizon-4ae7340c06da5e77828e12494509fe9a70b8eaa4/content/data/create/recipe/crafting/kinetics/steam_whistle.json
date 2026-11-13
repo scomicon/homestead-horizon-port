@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "create:golden_sheet",
+    "C": "minecraft:copper_ingot"
+  },
+  "pattern": [
+    "P",
+    "C"
+  ],
+  "result": {
+    "id": "create:steam_whistle"
+  },
+  "show_notification": true
+}

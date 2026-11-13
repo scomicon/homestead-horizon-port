@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "axis=x,alt=false": {
+      "model": "create:block/glass_fluid_pipe/fallback",
+      "x": 90,
+      "y": 90
+    },
+    "axis=x,alt=true": {
+      "model": "create:block/glass_fluid_pipe/fallback",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,alt=false": {
+      "model": "create:block/glass_fluid_pipe/fallback"
+    },
+    "axis=y,alt=true": {
+      "model": "create:block/glass_fluid_pipe/fallback"
+    },
+    "axis=z,alt=false": {
+      "model": "create:block/glass_fluid_pipe/fallback",
+      "x": 90
+    },
+    "axis=z,alt=true": {
+      "model": "create:block/glass_fluid_pipe/fallback",
+      "x": 90
+    }
+  }
+}

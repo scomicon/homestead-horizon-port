@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "L": "minecraft:lever",
+    "E": "create:electron_tube"
+  },
+  "pattern": [
+    "L",
+    "E"
+  ],
+  "result": {
+    "id": "create:powered_toggle_latch",
+    "count": 1
+  },
+  "show_notification": true
+}

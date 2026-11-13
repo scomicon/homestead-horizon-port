@@ -1,0 +1,11 @@
+{
+  "template": "minecraft:cobblestone_wall",
+  "item": true,
+  "properties": {
+    "hardness": 1.5,
+    "explosion_resistance": 1.0,
+    "sounds": "minecraft:dripstone_block",
+    "map_color": 48,
+    "requires_tool": true
+  }
+}

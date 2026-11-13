@@ -1,0 +1,20 @@
+{
+  "template": "minecraft:bookshelf",
+  "item": true,
+  "properties": {
+    "map_color": 26,
+    "sounds": "minecraft:chiseled_bookshelf"
+  },
+  "state_properties": {
+    "axis": {
+      "type": "enum",
+      "values": [
+        "x",
+        "z"
+      ]
+    }
+  },
+  "default_state": {
+    "axis": "z"
+  }
+}

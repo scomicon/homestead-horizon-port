@@ -1,0 +1,10 @@
+{
+  "title": "itemGroup.create.stock",
+  "icon": "create:stock_link",
+  "items": [
+    "create:stock_link",
+    "create:stock_ticker",
+    "create:package_frogport",
+    "create:package_postbox"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "minecraft:paper",
+    "C": "create:brass_casing"
+  },
+  "pattern": [
+    "P",
+    "C"
+  ],
+  "result": {
+    "id": "create:packager"
+  },
+  "show_notification": true
+}

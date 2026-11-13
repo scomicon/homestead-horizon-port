@@ -1,0 +1,28 @@
+[mod]
+id = "vault-hook-research"
+version = "0.0.0"
+
+[compatibility]
+horizon_revision = "4e5296d1800b3f89f2ae48dfd99d431801df4d46"
+
+[[injection]]
+id = "vault-view-boundary"
+target = "horizon_client::game::machines::Containers<'_>::view"
+kind = "HEAD"
+cancellable = true
+helper = "view.rs"
+bindings = [
+  { name = "containers", ty = "&Containers<'_>", value = "self" },
+  { name = "pos", ty = "Pos", value = "pos" },
+]
+
+[[injection]]
+id = "local-slot-growth-bound"
+target = "horizon_client::game::machines::Game<'_>::slot_mut_at"
+kind = "HEAD"
+helper = "resize.rs"
+bindings = [
+  { name = "game", ty = "&mut Game<'_>", value = "self" },
+  { name = "view", ty = "&View", value = "view" },
+  { name = "slot", ty = "usize", value = "slot" },
+]

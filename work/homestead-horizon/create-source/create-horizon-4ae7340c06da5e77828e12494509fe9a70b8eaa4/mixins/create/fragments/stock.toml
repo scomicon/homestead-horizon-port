@@ -1,0 +1,155 @@
+# Stock network slice: Stock Link, Stock Ticker (operator commands), Package Frogport and
+# Package Postbox. This file is a fragment: append it to mixins/create/horizon-mixin.toml.
+# Nothing here edits an existing injection; every hook is an additional helper on a hook
+# other injections already use. Helper functions are named create_stock_*.
+# See fragments/stock.md for the shared-file edits (content.py, acceptance wiring).
+
+[[module]]
+id = "stock-link-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_stock_link"
+source = "stock_link_runtime.rs"
+
+[[module]]
+id = "stock-ticker-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_stock_ticker"
+source = "stock_ticker_runtime.rs"
+
+[[module]]
+id = "stock-frogport-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_frogport"
+source = "frogport_runtime.rs"
+
+[[injection]]
+id = "stock-entity"
+hook = "block_entity"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_entity.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "entity", ty = "&mut Option<(String, horizon_world::nbt::Compound)>", value = "&mut *entity" },
+]
+
+[[injection]]
+id = "stock-ticks"
+hook = "block_entity_ticks"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_ticks.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "ticks", ty = "&mut bool", value = "&mut *ticks" },
+]
+
+[[injection]]
+id = "stock-tick"
+hook = "block_entity_tick"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "entity", ty = "&mut crate::containers::ModBlockEntity", value = "&mut *entity" },
+]
+
+[[injection]]
+id = "stock-update-tag"
+hook = "block_entity_update_tag"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_update_tag.rs"
+bindings = [
+  { name = "entity", ty = "&crate::containers::ModBlockEntity", value = "entity" },
+  { name = "tag", ty = "&mut Option<horizon_world::nbt::Compound>", value = "&mut *tag" },
+]
+
+[[injection]]
+id = "stock-draw"
+hook = "block_entity_submit"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_draw.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "block", ty = "&str", value = "block" },
+  { name = "entity", ty = "&crate::containers::ModBlockEntity", value = "entity" },
+  { name = "draw", ty = "&mut crate::game::native_block_entity_draw::BlockEntityDraw", value = "&mut *draw" },
+]
+
+[[injection]]
+id = "stock-container"
+hook = "block_entity_container"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_container.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "container", ty = "&mut Option<crate::containers::ModContainer>", value = "&mut *container" },
+]
+
+[[injection]]
+id = "stock-right-click"
+hook = "right_click_block"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_right_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "stock-destroy"
+hook = "destroy_block"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_destroy.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "stock-placed"
+hook = "place_block"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_placed.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "stack", ty = "&crate::items::ItemStack", value = "stack" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+]
+
+# `create stock ...` operator commands (list / status / order / address). Own root, so they
+# never meet `create cannon ...` or `create schematic ...`.
+[[injection]]
+id = "stock-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_register.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "stock-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "stock_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]

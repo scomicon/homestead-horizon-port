@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "create:electron_tube",
+    "R": "minecraft:redstone",
+    "C": "create:brass_casing"
+  },
+  "pattern": [
+    "E",
+    "R",
+    "C"
+  ],
+  "result": {
+    "id": "create:stock_link",
+    "count": 1
+  },
+  "show_notification": true
+}

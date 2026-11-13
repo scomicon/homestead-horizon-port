@@ -1,0 +1,95 @@
+# Linked Controller (module create_port_controller, controller_runtime.rs).
+# Append this file to mixins/create/horizon-mixin.toml EXCEPT the last injection
+# (`controller-bind`), which must sit BEFORE the injection `right-click` so it runs first
+# (see fragments/controller.md). All are additional HEAD helpers on hooks that already
+# have other injections.
+
+[[module]]
+id = "controller-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_controller"
+source = "controller_runtime.rs"
+
+[[injection]]
+id = "controller-components"
+hook = "component_types"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_component.rs"
+bindings = [
+  { name = "types", ty = "&mut Vec<String>", value = "&mut *types" },
+]
+
+# `create controller ...` operator commands (give / status / clear / set / bind / press / release).
+[[injection]]
+id = "controller-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_register.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "controller-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
+
+# Client: G toggles active mode, Z X C V B N are the six buttons.
+[[injection]]
+id = "controller-tick"
+hook = "tick"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_tick.rs"
+bindings = [{ name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" }]
+
+# Server: the input packet.
+[[injection]]
+id = "controller-packet"
+hook = "net_from_client"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_packet.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+  { name = "channel", ty = "&str", value = "channel" },
+  { name = "data", ty = "&[u8]", value = "data" },
+]
+
+# Server: ControllerServer::tick after the level's block entities.
+[[injection]]
+id = "controller-flush"
+hook = "level_tick_post"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_flush.rs"
+bindings = [
+ {name="game",ty="&mut crate::game::Game<'_>",value="&mut *self"},
+ {name="dimension",ty="&str",value="dimension"},
+]
+
+# MUST be placed before the injection `right-click` (the link's own right click would
+# otherwise take the controller as a frequency item). Binds a Redstone Link to the next button.
+[[injection]]
+id = "controller-bind"
+hook = "right_click_block"
+hook_version = 1
+kind = "HEAD"
+helper = "controller_right_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]

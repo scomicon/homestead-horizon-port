@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "create:block/stock_link/block",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "create:block/stock_link/block"
+    },
+    "facing=north": {
+      "model": "create:block/stock_link/block",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "create:block/stock_link/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create:block/stock_link/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east": {
+      "model": "create:block/stock_link/block",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

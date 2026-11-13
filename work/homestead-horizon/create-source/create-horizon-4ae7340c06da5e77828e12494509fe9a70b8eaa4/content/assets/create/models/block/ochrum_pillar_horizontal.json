@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "minecraft:block/yellow_concrete",
+    "side": "minecraft:block/yellow_terracotta"
+  }
+}

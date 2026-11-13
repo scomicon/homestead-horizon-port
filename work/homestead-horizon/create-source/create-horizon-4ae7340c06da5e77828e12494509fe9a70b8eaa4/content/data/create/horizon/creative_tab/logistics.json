@@ -1,0 +1,9 @@
+{
+  "title": "itemGroup.create.logistics",
+  "icon": "create:packager",
+  "items": [
+    "create:packager",
+    "create:factory_gauge",
+    "create:cardboard_package_12x12"
+  ]
+}

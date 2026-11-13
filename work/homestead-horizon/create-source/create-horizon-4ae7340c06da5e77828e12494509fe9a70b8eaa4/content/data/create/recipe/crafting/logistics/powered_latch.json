@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "T": "minecraft:redstone_torch",
+    "E": "create:electron_tube"
+  },
+  "pattern": [
+    "T",
+    "E"
+  ],
+  "result": {
+    "id": "create:powered_latch",
+    "count": 1
+  },
+  "show_notification": true
+}

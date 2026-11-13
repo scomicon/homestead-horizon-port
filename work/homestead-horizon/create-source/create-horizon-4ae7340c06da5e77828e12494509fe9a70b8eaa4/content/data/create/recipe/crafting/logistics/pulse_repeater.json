@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "minecraft:redstone",
+    "E": "create:electron_tube",
+    "A": "create:andesite_alloy"
+  },
+  "pattern": [
+    "R",
+    "E",
+    "A"
+  ],
+  "result": {
+    "id": "create:pulse_repeater",
+    "count": 1
+  },
+  "show_notification": true
+}

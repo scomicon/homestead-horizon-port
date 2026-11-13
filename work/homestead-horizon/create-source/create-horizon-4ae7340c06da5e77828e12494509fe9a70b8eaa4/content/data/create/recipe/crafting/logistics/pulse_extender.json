@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "minecraft:redstone",
+    "E": "create:electron_tube",
+    "B": "create:brass_sheet"
+  },
+  "pattern": [
+    "R",
+    "E",
+    "B"
+  ],
+  "result": {
+    "id": "create:pulse_extender",
+    "count": 1
+  },
+  "show_notification": true
+}

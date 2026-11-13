@@ -1,0 +1,7 @@
+{
+  "template": "minecraft:ladder",
+  "item": true,
+  "properties": {
+    "map_color": 11
+  }
+}

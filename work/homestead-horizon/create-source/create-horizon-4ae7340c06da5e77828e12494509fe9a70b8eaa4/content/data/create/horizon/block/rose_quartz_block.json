@@ -1,0 +1,11 @@
+{
+  "template": "minecraft:basalt",
+  "item": true,
+  "properties": {
+    "hardness": 1.5,
+    "explosion_resistance": 6.0,
+    "sounds": "minecraft:deepslate",
+    "map_color": 42,
+    "requires_tool": true
+  }
+}

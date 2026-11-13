@@ -1,0 +1,36 @@
+{
+  "template": "minecraft:glass",
+  "item": true,
+  "properties": {
+    "hardness": 1.5,
+    "explosion_resistance": 3.0,
+    "requires_tool": true,
+    "render_shape": "MODEL",
+    "occludes": false,
+    "sounds": "minecraft:copper_block"
+  },
+  "shapes": {
+    "default": [
+      [
+        0.125,
+        0.0,
+        0.125,
+        0.875,
+        0.875,
+        0.875
+      ]
+    ]
+  },
+  "collision_shapes": {
+    "default": [
+      [
+        0.125,
+        0.0,
+        0.125,
+        0.875,
+        0.875,
+        0.875
+      ]
+    ]
+  }
+}

@@ -1,0 +1,209 @@
+# Schematicannon, Schematic Table, Schematic / Empty Schematic items and the Material
+# Checklist (clipboard). Append this whole file to mixins/create/horizon-mixin.toml (after
+# the `schematic-command` injection is fine; order between independent hooks does not
+# matter). The helper files (cannon_*.rs) live in mixins/create beside horizon-mixin.toml.
+# See fragments/schematic.md for the shared-file edits this needs (schematic_runtime.rs
+# visibility, content.py, catalog.py, fallback_textures.py, acceptance wiring).
+
+[[module]]
+id = "schematic-data"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_schematic_data"
+source = "schematic_data.rs"
+
+[[module]]
+id = "cannon-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_cannon"
+source = "cannon_runtime.rs"
+
+[[module]]
+id = "schematic-table-runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "create_port_schematic_table"
+source = "schematic_table_runtime.rs"
+
+# The data component types of the Schematic item and the Material Checklist.
+[[injection]]
+id = "cannon-components"
+hook = "component_types"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_component.rs"
+bindings = [
+  { name = "types", ty = "&mut Vec<String>", value = "&mut *types" },
+]
+
+# `create cannon ...` operator commands (give / deploy / load / control / status / list / checklist).
+# They use their own root so they never meet `create schematic ...` of schematic_command.rs.
+[[injection]]
+id = "cannon-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_register.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "cannon-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
+
+# Block entities of the cannon and the table.
+[[injection]]
+id = "cannon-entity"
+hook = "block_entity"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_entity.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "entity", ty = "&mut Option<(String, horizon_world::nbt::Compound)>", value = "&mut *entity" },
+]
+
+[[injection]]
+id = "cannon-ticks"
+hook = "block_entity_ticks"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_ticks.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "ticks", ty = "&mut bool", value = "&mut *ticks" },
+]
+
+[[injection]]
+id = "cannon-tick"
+hook = "block_entity_tick"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "entity", ty = "&mut crate::containers::ModBlockEntity", value = "&mut *entity" },
+]
+
+[[injection]]
+id = "cannon-update-tag"
+hook = "block_entity_update_tag"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_update_tag.rs"
+bindings = [
+  { name = "entity", ty = "&crate::containers::ModBlockEntity", value = "entity" },
+  { name = "tag", ty = "&mut Option<horizon_world::nbt::Compound>", value = "&mut *tag" },
+]
+
+[[injection]]
+id = "cannon-destroy"
+hook = "destroy_block"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_destroy.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# Container with the mod menu types (data/create/horizon/menu/schematicannon.json and
+# schematic_table.json), their screens, buttons and shift-click.
+[[injection]]
+id = "cannon-container"
+hook = "block_entity_container"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_container.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "container", ty = "&mut Option<crate::containers::ModContainer>", value = "&mut *container" },
+]
+
+[[injection]]
+id = "cannon-screen"
+hook = "screen"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_screen.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "screen", ty = "&mut Option<crate::mod_api::NativeScreen>", value = "&mut *screen" },
+]
+
+[[injection]]
+id = "cannon-screen-draw"
+hook = "screen_draw"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_screen_draw.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "block", ty = "&str", value = "block" },
+  { name = "data", ty = "&[i32]", value = "data" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "origin", ty = "[f32; 2]", value = "origin" },
+]
+
+[[injection]]
+id = "cannon-screen-click"
+hook = "screen_click"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_screen_click.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "at", ty = "[f32; 2]", value = "at" },
+  { name = "button", ty = "&mut Option<i32>", value = "&mut *button" },
+]
+
+[[injection]]
+id = "cannon-screen-tooltip"
+hook = "screen_tooltip"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_screen_tooltip.rs"
+bindings = [
+  { name = "block", ty = "&str", value = "block" },
+  { name = "at", ty = "[f32; 2]", value = "at" },
+  { name = "lines", ty = "&mut Vec<String>", value = "&mut *lines" },
+]
+
+[[injection]]
+id = "cannon-menu-button"
+hook = "menu_button"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_menu_button.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "entity", ty = "&mut crate::containers::ModBlockEntity", value = "&mut *entity" },
+  { name = "id", ty = "i32", value = "id" },
+]
+
+[[injection]]
+id = "cannon-quick-move"
+hook = "menu_quick_move"
+hook_version = 1
+kind = "HEAD"
+helper = "cannon_quick_move.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "entity", ty = "&mut crate::containers::ModBlockEntity", value = "&mut *entity" },
+  { name = "container_slots", ty = "usize", value = "container_slots" },
+  { name = "slot", ty = "usize", value = "slot" },
+  { name = "stack", ty = "&mut crate::items::ItemStack", value = "&mut *stack" },
+  { name = "handled", ty = "&mut bool", value = "&mut *handled" },
+]

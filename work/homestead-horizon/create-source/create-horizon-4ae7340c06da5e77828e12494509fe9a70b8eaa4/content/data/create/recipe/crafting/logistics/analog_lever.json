@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "L": "minecraft:lever",
+    "C": "create:andesite_casing"
+  },
+  "pattern": [
+    "L",
+    "C"
+  ],
+  "result": {
+    "id": "create:analog_lever",
+    "count": 1
+  },
+  "show_notification": true
+}

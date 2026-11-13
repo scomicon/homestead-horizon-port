@@ -1,0 +1,124 @@
+{
+  "template": "minecraft:glass",
+  "item": true,
+  "properties": {
+    "hardness": 2.0,
+    "explosion_resistance": 3.0,
+    "requires_tool": false,
+    "occludes": false,
+    "render_shape": "MODEL",
+    "sounds": "minecraft:copper_block"
+  },
+  "state_properties": {
+    "facing": {
+      "type": "enum",
+      "values": [
+        "north",
+        "south",
+        "west",
+        "east"
+      ]
+    },
+    "up": {
+      "type": "boolean"
+    },
+    "down": {
+      "type": "boolean"
+    }
+  },
+  "default_state": {
+    "facing": "north",
+    "up": "false",
+    "down": "false"
+  },
+  "shapes": {
+    "property": "facing",
+    "values": {
+      "south": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          0.5
+        ]
+      ],
+      "north": [
+        [
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "east": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0
+        ]
+      ],
+      "west": [
+        [
+          0.5,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "collision_shapes": {
+    "property": "facing",
+    "values": {
+      "south": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          0.5
+        ]
+      ],
+      "north": [
+        [
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "east": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0
+        ]
+      ],
+      "west": [
+        [
+          0.5,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      ]
+    }
+  }
+}
