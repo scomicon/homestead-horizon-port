@@ -8,7 +8,7 @@
 
 Если у вас есть готовая папка (или `.zip`) нашей сборки, которую вам передал автор, и установлена сборка **Homestead - A Cozy Survival Experience** из CurseForge:
 
-1. Запустите `Install-Homestead.cmd` из папки сборки.
+1. Запустите **[Install-Homestead.cmd](Install-Homestead.cmd)** (двойной щелчок; лежит в корне этого репозитория).
 2. Укажите путь к нашей сборке и к Homestead. Скрипт сам находит Homestead и ресурсы Horizon, обычно достаточно нажимать Enter.
 3. Согласитесь на запуск. **Первая загрузка занимает 3-5 минут**: игра строит кэш модов. Не закрывайте окно и не запускайте вторую копию.
 
@@ -33,7 +33,7 @@
 ## Структура
 
 ```
-Install-Homestead.cmd / .ps1                 быстрая установка (лежат в папке сборки; в репозитории: stage4/package/)
+Install-Homestead.cmd / .ps1                 быстрая установка (запускать из корня репозитория)
 work/
   rust-env.ps1                               окружение сборки (Rust, clang, Git)
   homestead-horizon/
@@ -45,7 +45,7 @@ work/
       tools/                                   генераторы контента (content.py и др.)
       docs/                                    документы по каждому срезу
     stage4/                                  сборка, приёмка, исследования
-      package/                                 Install-Homestead.*, Start-Homestead.ps1, Play-Create.cmd
+      package/                                 Start-Homestead.ps1, Play-Create.cmd (попадают в папку сборки)
       acceptance/                              сценарии приёмки (PowerShell 7)
       research/roadmap.md                      план и известные долги
       Build-*.ps1, Run-Acceptance.ps1, regress.ps1

@@ -42,3 +42,5 @@ target/
 !/work/rust-env.ps1
 !/work/homestead-horizon/Setup-Paths.ps1
 /work/homestead-horizon/*-source-path.txt
+!/Install-Homestead.ps1
+!/Install-Homestead.cmd
