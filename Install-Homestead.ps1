@@ -93,6 +93,18 @@ if ((Get-Item -LiteralPath $OurBuild).PSIsContainer) {
     Fail 'Нужна папка со сборкой или файл .zip.'
 }
 if (-not $CheckOnly -and -not (IsBuildFolder $buildRoot)) {
+    if (Test-Path -LiteralPath (Join-Path $buildRoot 'work\homestead-horizon\stage4')) {
+        Say ''
+        Say 'Это не готовая сборка, а ИСХОДНЫЙ КОД проекта (скачанный с GitHub).' 'Red'
+        Say 'В нём нет игры: клиента и модов в репозиторий не кладут, потому что они чужие.' 'Red'
+        Say ''
+        Say 'Что делать:'
+        Say '  1. Если автор передал вам готовую сборку (папку homestead-horizon-stageNN или .zip),'
+        Say '     запустите установку заново и укажите путь к ней, а не к репозиторию.'
+        Say '  2. Если готовой сборки нет, её можно собрать из исходников самому:'
+        Say '     см. INSTALL.md, путь Б (нужны Rust, исходники Horizon и около часа).'
+        exit 1
+    }
     Fail ('В ' + $buildRoot + ' не нашёл client\horizon-client.exe и Start-Homestead.ps1. Это не папка нашей сборки или архив распакован не до конца.')
 }
 Say ('Наша сборка: ' + $buildRoot) 'Green'
