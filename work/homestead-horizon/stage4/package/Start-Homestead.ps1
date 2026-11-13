@@ -3,6 +3,7 @@ param(
     [string]$Resources,
     [string]$SourceInstance,
     [string]$World,
+    [string]$Name,
     [switch]$Review,
     [switch]$Creative,
     [switch]$Offscreen,
@@ -31,10 +32,11 @@ if ($running.Count -gt 0) {
 }
 
 $settingsFile = Join-Path $root 'local-settings.json'
-if ((!$Resources -or !$SourceInstance) -and (Test-Path -LiteralPath $settingsFile)) {
+if (Test-Path -LiteralPath $settingsFile) {
     $settings = Get-Content -LiteralPath $settingsFile -Raw | ConvertFrom-Json
     if (!$Resources) { $Resources = $settings.resources }
     if (!$SourceInstance) { $SourceInstance = $settings.sourceInstance }
+    if (!$Name -and $settings.playerName) { $Name = [string]$settings.playerName }
 }
 if (!$SourceInstance) {
     throw 'Homestead folder is not set. Run Install-Homestead.cmd, or fill sourceInstance in local-settings.json.'
@@ -144,7 +146,8 @@ $env:TMP = $env:TEMP
 New-Item -ItemType Directory -Path $env:TEMP | Out-Null
 $arguments = @('--resources',$resourcesCopy,'--game-dir',$game,'--render-distance','6')
 if ($World) { $arguments += @('--world',$World,'--seed','5') }
-if ($Review) { $arguments += @('--name','HomesteadTest') }
+if ($Name -and ($Name -notmatch '^[A-Za-z0-9_]{3,16}$')) { throw 'Player name must be 3-16 characters: letters, digits, underscore.' }
+if ($Name) { $arguments += @('--name',$Name) } elseif ($Review) { $arguments += @('--name','HomesteadTest') }
 if ($Creative) { $arguments += '--creative' }
 if ($Offscreen) { $arguments += @('--offscreen','--control-socket',(Join-Path $session 'ctl.json')) }
 $quoted = @($arguments | ForEach-Object {

@@ -15,6 +15,7 @@ param(
     [string]$Homestead,       # папка экземпляра Homestead (CurseForge)
     [string]$Resources,       # папка horizon-client\26.3 (с facts.json), если не найдётся сама
     [string]$InstallTo,       # куда распаковать, если OurBuild это .zip
+    [string]$PlayerName,      # ник игрока (3-16 символов: буквы, цифры, _); по умолчанию HomesteadTest в обзорном мире
     [switch]$Launch,          # сразу запустить после установки
     [switch]$CheckOnly        # только проверить, ничего не писать и не запускать
 )
@@ -174,6 +175,17 @@ if (-not (Test-Path -LiteralPath (Join-Path $Resources 'facts.json'))) {
 }
 Say ('Ресурсы Horizon: ' + $Resources) 'Green'
 
+# --- Ник игрока ----------------------------------------------------------------------
+if (-not $PlayerName -and -not $CheckOnly) {
+    Say ''
+    Say 'Ник игрока (3-16 символов: латинские буквы, цифры, _). Enter пропустить: будет HomesteadTest.' 'Yellow'
+    Say 'Внимание: инвентарь и прогресс в мире привязаны к нику. Другой ник это другой игрок.' 'DarkGray'
+    $PlayerName = Ask 'Ник' ''
+}
+if ($PlayerName -and ($PlayerName -notmatch '^[A-Za-z0-9_]{3,16}$')) {
+    Fail 'Ник должен быть 3-16 символов: латинские буквы, цифры, подчёркивание.'
+}
+
 # --- Свободное место и запущенная игра -----------------------------------------------
 $drive = (Get-Item -LiteralPath $buildRoot -ErrorAction SilentlyContinue)
 if ($drive) {
@@ -191,6 +203,7 @@ if ($CheckOnly) {
     exit 0
 }
 $settings = [ordered]@{ resources = $Resources; sourceInstance = $Homestead }
+if ($PlayerName) { $settings.playerName = $PlayerName }
 $settingsFile = Join-Path $buildRoot 'local-settings.json'
 [IO.File]::WriteAllText($settingsFile, ($settings | ConvertTo-Json), (New-Object Text.UTF8Encoding($false)))
 Say ''
