@@ -44,3 +44,4 @@ target/
 /work/homestead-horizon/*-source-path.txt
 !/Install-Homestead.ps1
 !/Install-Homestead.cmd
+!/AGENTS.md
