@@ -61,7 +61,7 @@
 
 ⚠ Точные дистрибутивы автор получал вручную. Если версии отличаются, сборка может не пройти.
 
-Файл `work\rust-env.ps1` добавляет эти папки в PATH. Скопируйте его из рабочей копии автора или повторите: он только прописывает `PATH`, `CARGO_HOME`, `RUSTC`, `CC`, `CXX`, `AR` и линкер на clang из `work\llvm-mingw`. ⚠ В публичный репозиторий этот файл может не попасть, тогда создайте его по этому описанию.
+Файл `work\rust-env.ps1` лежит в репозитории: он добавляет эти папки в PATH и задаёт `CARGO_HOME`, `RUSTC`, `CC`, `CXX`, `AR` и линкер clang. Править его не нужно.
 
 ### Б.2. Исходники двух зависимостей
 
@@ -70,15 +70,13 @@
 1. Клиент Horizon: ревизия `4e5296d1800b3f89f2ae48dfd99d431801df4d46` из `github.com/horizon-rust/horizon`. Распакуйте в `work\homestead-horizon\engine\horizon-4e5296d1800b3f89f2ae48dfd99d431801df4d46\`.
 2. Инструмент миксинов: ревизия `e8cd0aa38cffef49cb2e088ef716baa107148c02` из `github.com/horizon-rust/horizon-mixins`. Распакуйте в `work\homestead-horizon\mixins-tool\horizon-mixins-e8cd0aa38cffef49cb2e088ef716baa107148c02\` и соберите: `cargo build` там даст `target\debug\horizon-mixins.exe`.
 
-Затем создайте **три текстовых файла** в `work\homestead-horizon\`, в каждом одна строка с полным путём:
+Затем запустите скрипт путей. Он сам создаёт три файла `create-source-path.txt`, `engine-source-path.txt`, `mixins-source-path.txt` в `work\homestead-horizon\` с полными путями вашей машины и проверяет, что на месте инструменты и исходники:
 
-| Файл | Что записать |
-| --- | --- |
-| `create-source-path.txt` | `<корень репозитория>\work\homestead-horizon\create-source\create-horizon-4ae7340c06da5e77828e12494509fe9a70b8eaa4` |
-| `engine-source-path.txt` | путь к папке клиента из пункта 1 |
-| `mixins-source-path.txt` | путь к папке инструмента из пункта 2 |
+```powershell
+pwsh work\homestead-horizon\Setup-Paths.ps1
+```
 
-⚠ Этих файлов в репозитории нет: в них абсолютные пути вашей машины.
+Каждая строка `НЕТ` в его выводе говорит, чего не хватает; `OK` значит, что всё найдено. Запускайте его после каждого шага установки, пока не останутся одни `OK`. Эти три файла в `.gitignore`, потому что в них абсолютные пути.
 
 ### Б.3. Настройки
 
