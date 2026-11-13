@@ -36,6 +36,8 @@ work/homestead-horizon/
     Build-*.ps1, Run-Acceptance.ps1, regress.ps1
 ```
 
+> Пошаговая инструкция по установке и сборке: [INSTALL.md](INSTALL.md).
+
 ## Сборка (принеси свои файлы)
 
 Чего нет в репозитории и нужно получить самому:
