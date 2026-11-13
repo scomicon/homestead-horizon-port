@@ -37,7 +37,7 @@ if ((!$Resources -or !$SourceInstance) -and (Test-Path -LiteralPath $settingsFil
     if (!$SourceInstance) { $SourceInstance = $settings.sourceInstance }
 }
 if (!$SourceInstance) {
-    throw 'Укажите путь к вашему Homestead: запустите Install-Homestead.cmd или заполните sourceInstance в local-settings.json.'
+    throw 'Homestead folder is not set. Run Install-Homestead.cmd, or fill sourceInstance in local-settings.json.'
 }
 if (!$Resources -or !(Test-Path -LiteralPath (Join-Path $Resources 'facts.json'))) {
     throw 'Pass -Resources with your prepared Horizon 26.3 resource folder.'
