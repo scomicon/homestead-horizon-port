@@ -1,0 +1,6 @@
+# Batch 2 data mods (stage 23): Ocean's Delight, Crate Delight, Obsidian Equipment Reworked,
+# Minecraft Accelerated, Create Deco, Sooty Chimneys.
+#
+# Data-only slice: NO Rust modules and NO injections are added to mixins/homestead/horizon-mixin.toml.
+# This file is intentionally empty of [[module]] / [[injection]] tables; see fragments/batch2.md for
+# the PowerShell/acceptance/package integration edits.

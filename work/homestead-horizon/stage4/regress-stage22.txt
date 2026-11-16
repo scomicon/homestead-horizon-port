@@ -1,0 +1,46 @@
+START 2026-11-15T23:05:32 binary=51002ac6e893d154eba9df5a875850ca14bc6f9b61a4382685e26570d6f399ee
+flow attempt1 ok 23:11:06
+reload attempt1 ok 23:12:00
+RESUME binary=51002ac6e893d154eba9df5a875850ca14bc6f9b61a4382685e26570d6f399ee 23:32:54
+flow skip(already-green) 23:32:54
+reload skip(already-green) 23:32:54
+vault attempt1 ok 23:35:00
+vault-reload attempt1 ok 23:36:06
+harvest attempt1 ok 23:37:14
+tweaks attempt1 ok 23:38:21
+rain attempt1 ok 23:40:35
+days attempt1 ok 23:41:57
+fd attempt1 ok 23:42:51
+decor attempt1 ok 23:44:26
+arm attempt1 ok 23:45:18
+link attempt1 ok 23:46:20
+points attempt1 ok 23:49:33
+tank attempt1 ok 23:50:42
+pipes attempt1 ok 23:52:35
+steam attempt1 ok 23:53:28
+board attempt1 ok 23:54:44
+stove attempt1 ok 23:56:51
+skillet attempt1 ok 23:58:32
+pot attempt1 ok 00:00:36
+switches attempt1 ok 00:01:52
+displays attempt1 ok 00:03:07
+cannon attempt1 ok 00:05:42
+packager attempt1 ok 00:06:36
+controller attempt1 ok 00:07:37
+schematic-tools attempt1 ok 00:08:40
+stock attempt1 ok 00:09:38
+crops attempt1 ok 00:12:15
+feasts attempt1 ok 00:14:03
+datamods attempt1 ok 00:14:58
+fixes2 attempt1 ok 00:21:51
+motor attempt1 ok 00:22:51
+clientdefaults attempt1 ok 00:28:05
+logica attempt1 ok 00:30:42
+logicb attempt1 ok 00:32:26
+logicd attempt1 ok 00:33:31
+clientt attempt1 ok 00:34:19
+clienth attempt1 ok 00:36:53
+batch1 attempt1 ok 00:37:57
+engine20 attempt1 ok 00:39:13
+clients attempt1 FAIL The client has no healthy audio backend: Horizon: no sound: no audio output device on the WASAPI host. This cannot pass as sound-playback acceptance. 00:40:37
+ALL DONE 00:40:37

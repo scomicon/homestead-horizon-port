@@ -112,6 +112,8 @@ foreach ($mod in $carryMods) {
     if ($LASTEXITCODE -ne 0) { throw "overlay failed for $($mod.key)" }
     Remove-Item $tabs -Recurse -Force -ErrorAction SilentlyContinue
     & $python -I (Join-Path $create 'tools/creative_tab.py') --out $tabs $overlay | Out-Null
+    & $python -I (Join-Path $create 'tools/block_looks.py') --out $tabs $overlay | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "block_looks failed for $id" }
     if (Test-Path $tabs) {
         foreach ($g in Get-ChildItem $tabs -Recurse -File) {
             $rel = $g.FullName.Substring((Resolve-Path $tabs).Path.TrimEnd('\').Length + 1)
@@ -140,7 +142,7 @@ foreach ($mod in $carryMods) {
 # --- SparseStructures data pack (new worlds only) ----------------------------------------------------------
 if ($sparse.Count -gt 0) {
     if (-not $Mcmeta) {
-        $Mcmeta = @('stage19', 'stage18', 'stage17') | ForEach-Object { Join-Path $workspace "outputs/homestead-horizon-$_/datapacks/homestead-create/pack.mcmeta" } |
+        $Mcmeta = @('stage22', 'stage20', 'stage19', 'stage18', 'stage17') | ForEach-Object { Join-Path $workspace "outputs/homestead-horizon-$_/datapacks/homestead-create/pack.mcmeta" } |
             Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
     }
     if (-not $Mcmeta) { throw 'Pass -Mcmeta <pack.mcmeta of datapacks/homestead-create> (no built package found).' }

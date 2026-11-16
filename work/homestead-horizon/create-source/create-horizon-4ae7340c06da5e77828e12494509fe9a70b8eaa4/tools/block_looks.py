@@ -62,6 +62,21 @@ THIN_PARENTS = {  # name -> synthetic elements (16 units)
     'block/slab_top': [([0, 8, 0], [16, 16, 16])],
 }
 EPS = 1e-6
+HEAD_STRIP_KEYS = (
+    'minecraft:attribute_modifiers',
+    'minecraft:equippable',
+    'minecraft:compostable',
+)
+
+
+def missing_head_strips(decl):
+    """Component removals needed on a carved_pumpkin-templated block item so it cannot be worn on the head."""
+    if not isinstance(decl, dict) or decl.get('template') != 'minecraft:carved_pumpkin':
+        return []
+    if decl.get('item') is False:
+        return []
+    comps = decl.get('components') if isinstance(decl.get('components'), dict) else {}
+    return ['!' + k for k in HEAD_STRIP_KEYS if k not in comps and ('!' + k) not in comps]
 
 
 # ---- readers ---------------------------------------------------------------------------------
@@ -373,7 +388,8 @@ def block_ids(reader):
 
 def new_counts():
     return {'blocks': 0, 'occludes_false': 0, 'oversized': 0, 'plant_empty': 0, 'empty_solid': 0,
-            'geo': 0, 'state_template': 0, 'slab_mismatch': 0, 'other_template': 0, 'unknown': 0, 'written': 0}
+            'geo': 0, 'state_template': 0, 'slab_mismatch': 0, 'other_template': 0, 'unknown': 0,
+            'head_stripped': 0, 'written': 0}
 
 
 def process(root, out=None, collision=True, shapes=False, dry_run=False):
@@ -387,6 +403,9 @@ def process(root, out=None, collision=True, shapes=False, dry_run=False):
         c['blocks'] += 1
         if not isinstance(decl, dict) or 'template' not in decl:
             continue
+        head_strips = missing_head_strips(decl)
+        if head_strips:
+            c['head_stripped'] += 1
         look = analyze_models(reader, ns, name)
         verdict = decide(decl['template'], look)
         if verdict.category in ('state_template', 'other_template', 'unknown'):
@@ -401,12 +420,20 @@ def process(root, out=None, collision=True, shapes=False, dry_run=False):
             c['occludes_false'] += 1
         want_collision = collision and verdict.collision is not None and 'collision_shapes' not in decl
         want_occ = verdict.occludes_false and (decl.get('properties') or {}).get('occludes') is not False
-        if not (want_collision or want_occ):
+        want_head = bool(head_strips)
+        if not (want_collision or want_occ or want_head):
             continue
         c['written'] += 1
         if dry_run:
             continue
         new = json.loads(json.dumps(decl))
+        if want_head:
+            comps = new.get('components')
+            if not isinstance(comps, dict):
+                comps = {}
+            for remove_key in head_strips:
+                comps[remove_key] = {}
+            new['components'] = comps
         if want_occ:
             props = new.get('properties')
             if not isinstance(props, dict):
@@ -439,8 +466,13 @@ def check(path):
             template = decl['template']
             if template in STATE_TEMPLATES or (template not in FULL_TEMPLATES and template not in NO_COLLISION_TEMPLATES):
                 continue
+            head_strips = missing_head_strips(decl)
+            if head_strips:
+                violations.append((ns, name, 'head_slot', 'carved_pumpkin template without ' + ', '.join(head_strips)))
             look = analyze_models(reader, ns, name)
             if look.status != 'ok':
+                if head_strips:
+                    checked[ns] = checked.get(ns, 0) + 1
                 continue
             checked[ns] = checked.get(ns, 0) + 1
             verdict = decide(template, look)

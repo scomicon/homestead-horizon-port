@@ -38,7 +38,7 @@ const PROTECTION_TICKS: i64 = 900 * 20;
 /// `max_distance_from_source_location`.
 const RADIUS: i32 = 16;
 /// The permission level that may open anyone's grave (the original's `universal_graves.modify`).
-const OPERATOR_LEVEL: u8 = 2;
+const ADMIN_LEVEL: u8 = 2;
 const OWNER_MOST: &str = "OwnerMost";
 const OWNER_LEAST: &str = "OwnerLeast";
 const CREATED: &str = "Created";
@@ -193,7 +193,7 @@ fn guarded(game: &mut Game<'_>, pos: Pos) -> bool {
     let Some(player) = game.native_acting_player() else {
         return false;
     };
-    if player.permission >= OPERATOR_LEVEL {
+    if player.permission >= ADMIN_LEVEL {
         return false;
     }
     let now = game.world.game_time as i64;

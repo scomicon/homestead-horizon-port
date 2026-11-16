@@ -1,0 +1,14 @@
+{
+  "passed": false,
+  "process_id": 11716,
+  "reload_only": false,
+  "phases": [
+    "ClientS"
+  ],
+  "binary_sha256": "0e1c6169f1da5b27d7f9201396c34cffd97a452a4e4e93e784205591a85704c0",
+  "shutdown": {
+    "requested": true,
+    "process_exited": true
+  },
+  "error": "The client has no healthy audio backend: Horizon: no sound: no audio output device on the WASAPI host. This cannot pass as sound-playback acceptance."
+}

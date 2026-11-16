@@ -1,0 +1,71 @@
+{
+  "_comment": "Batch 2 (stage 23). One entry per mod: how it is carried and what is pruned. 'licence' is the Modrinth/jar metadata, not legal advice. 'publicRelease': false means the packed .hmod must never go into a public release archive. All numbers added by tools/batch2_content.py are estimates (see docs/batch2.md).",
+  "mods": [
+    {
+      "key": "oceansdelight",
+      "namespace": "oceansdelight",
+      "name": "Ocean's Delight",
+      "licence": "MIT / CC0-1.0",
+      "publicRelease": true,
+      "mode": "carry",
+      "foods": true,
+      "blocked_recipe_types": [],
+      "notes": "Farmer's Delight seafood addon. Cooking and cutting recipes are consumed by the native Farmer's Delight pot and board (any namespace). Adds estimated food components and a feast shell for guardian_soup (interactive serving and entity loot injection on squid/guardian/elder_guardian are not ported)."
+    },
+    {
+      "key": "cratedelight",
+      "namespace": "cratedelight",
+      "name": "Crate Delight",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "drop_uncraftable_items": true,
+      "blocked_recipe_types": [],
+      "notes": "30 storage crates and bags for vanilla, Farmer's Delight and Expanded Delight items. Recipes for absent mods or failing fabric:load_conditions are pruned together with their uncraftable crates."
+    },
+    {
+      "key": "obsidianequipmentrework",
+      "namespace": "obsidianequipmentrework",
+      "name": "Obsidian Equipment Reworked",
+      "licence": "CC0-1.0 / MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "obsidian_equipment": true,
+      "drop_vanilla_recipe_overrides": true,
+      "drop_items": ["obsidian_spear_in_hand"],
+      "blocked_recipe_types": [],
+      "notes": "Obsidian armor, tools, horse/nautilus armor, spear, ingot and smithing template. Adds estimated armor/tool stats and equippable slots. Drops vanilla netherite smithing overrides so vanilla progression stays intact when template loot is absent."
+    },
+    {
+      "key": "mcaccel",
+      "namespace": "mcaccel",
+      "name": "Minecraft Accelerated",
+      "licence": "CC0-1.0",
+      "publicRelease": true,
+      "mode": "carry",
+      "pumpkin_lights": true,
+      "blocked_recipe_types": [],
+      "notes": "28 decorative carved pumpkins, jack o'lanterns and soul jack o'lanterns with crafting recipes and self-drop loot tables. Sets light=15 on jack_o_lantern_* and light=10 on soul_jack_o_lantern_*."
+    },
+    {
+      "key": "createdeco",
+      "namespace": "createdeco",
+      "name": "Create Deco",
+      "licence": "MIT (Modrinth; fabric.mod.json placeholder)",
+      "publicRelease": false,
+      "mode": "carry",
+      "blocked_recipe_types": [],
+      "notes": "Industrial Create decoration blocks, items and recipes (including stonecutting and create:pressing). Kept local-only (publicRelease: false) until the upstream fabric.mod.json placeholder is resolved. Interactive block behaviours beyond template matches are shells only."
+    },
+    {
+      "key": "sootychimneys",
+      "namespace": "sootychimneys",
+      "name": "Sooty Chimneys",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "blocked_recipe_types": ["sootychimneys:soot_scraping"],
+      "notes": "14 decorative clean/dirty chimney blocks and crafting recipes. Drops soot_scraping recipes; smoke particles and soot accumulation/scraping require client particle and block-entity hooks and are not ported."
+    }
+  ]
+}

@@ -103,7 +103,11 @@ def process(root, policy, out=None):
                 before = list(doc.get('items') or [])
                 doc['items'] = [e for e in before if e not in ids]
                 summary['tab_entries'] += len(before) - len(doc['items'])
-                if doc['items'] != before:
+                icon_moved = doc.get('icon') in ids and bool(doc['items'])
+                if icon_moved:
+                    # Keep the tab icon on a surviving entry (the one named like the namespace first).
+                    doc['icon'] = next((e for e in doc['items'] if e.split(':')[1] == ns), doc['items'][0])
+                if doc['items'] != before or icon_moved:
                     tab.write_text(json.dumps(doc, indent=2) + '\n', encoding='utf-8')
     return sorted(set(drops)), summary
 

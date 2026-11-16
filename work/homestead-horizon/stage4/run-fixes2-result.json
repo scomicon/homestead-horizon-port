@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "process_id": 4332,
+  "reload_only": false,
+  "phases": [
+    "Fixes2"
+  ],
+  "binary_sha256": "0e1c6169f1da5b27d7f9201396c34cffd97a452a4e4e93e784205591a85704c0",
+  "shutdown": {
+    "requested": true,
+    "process_exited": true
+  }
+}

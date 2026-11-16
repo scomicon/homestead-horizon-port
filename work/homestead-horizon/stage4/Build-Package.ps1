@@ -1,4 +1,4 @@
-﻿#requires -Version 7.0
+#requires -Version 7.0
 # Assembles outputs/<Name> from the accepted candidate client.
 # Refuses to run unless every acceptance receipt passed on the candidate binary.
 # -AudioWaiver: accept a ClientS receipt that failed ONLY for lack of an audio output device;
@@ -21,7 +21,7 @@ if (-not $final.StartsWith($workspace + [IO.Path]::DirectorySeparatorChar, [Stri
 
 # 1. Receipts must belong to this very binary.
 $binary = (Get-FileHash -LiteralPath (Join-Path $candidate 'horizon-client.exe') -Algorithm SHA256).Hash.ToLowerInvariant()
-$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json','run-clientdefaults-result.json','run-logica-result.json','run-logicb-result.json','run-logicd-result.json','run-clientt-result.json','run-clienth-result.json','run-clients-result.json','run-batch1-result.json','run-engine20-result.json','run-fixes2-result.json')
+$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json','run-clientdefaults-result.json','run-logica-result.json','run-logicb-result.json','run-logicd-result.json','run-clientt-result.json','run-clienth-result.json','run-clients-result.json','run-batch1-result.json','run-engine20-result.json','run-fixes2-result.json','run-fdstage23-result.json','run-batch2-result.json')
 $audioWaived = $false
 foreach ($name in $runs) {
     $r = Get-Content -LiteralPath (Join-Path $PSScriptRoot $name) -Raw | ConvertFrom-Json
@@ -130,6 +130,13 @@ Copy-Item -Path (Join-Path $PSScriptRoot 'acceptance/Test-*.ps1') (Join-Path $fi
 foreach ($name in $runs) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) (Join-Path $final 'validation') }
 foreach ($f in Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'runtime/game') -Filter 'stage*-result.json') { Copy-Item -LiteralPath $f.FullName (Join-Path $final 'validation') }
 foreach ($n in 'create-engine-tests.log') { if (Test-Path (Join-Path $PSScriptRoot $n)) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $n) (Join-Path $final 'validation') } }
+# Logs carry absolute build paths (and with them the Windows user name): rewrite the workspace root and any profile path.
+foreach ($log in Get-ChildItem -LiteralPath (Join-Path $final 'validation') -Filter '*.log') {
+    $text = [IO.File]::ReadAllText($log.FullName)
+    $clean = $text.Replace($workspace, '<workspace>').Replace($workspace.Replace('\', '/'), '<workspace>')
+    $clean = [regex]::Replace($clean, '(?i)[A-Z]:[\\/]+Users[\\/]+[^\\/\s''"]+', '<profile>')
+    if ($clean -ne $text) { [IO.File]::WriteAllText($log.FullName, $clean, $utf8) }
+}
 
 # 7. Provenance.
 $provenance = Get-Content -LiteralPath (Join-Path $stage3 'provenance.json') -Raw | ConvertFrom-Json -AsHashtable
@@ -172,7 +179,9 @@ $provenance.local_changes = @(
     'Homestead client sound: Extreme Sound Muffler, Presence Footsteps, AmbientSounds engines, placeholder tones only (stage 26)',
     'Batch 1 data mods: Expanded Delight, Farmer''s Knives, Mo Glass, Perfect Homestead Plushies, Spud''s Shops, Go Fish (items only, fishing not ported), Nether''s Delight (data half), SparseStructures data pack for new worlds; food and tool values estimated (stage 27)',
     'Engine patches (sleep hooks for the single-player host, bed by block state, Peaceful Hunger switch, grindstone result take) with Comforts, Peaceful Hunger and Grind Enchantments (stage 27)',
-    'Playtest fixes 2: advancement predicates (no structure advancements at once in new worlds), block occlusion and collision for small-model blocks, hidden modded boats (stage 22)'
+    'Playtest fixes 2: advancement predicates (no structure advancements at once in new worlds), block occlusion and collision for small-model blocks, hidden modded boats (stage 22)',
+    'Farmer''s Delight: baskets, cabinets, canvas rug, rope, mushroom colonies (stage 23)',
+    'Batch 2 data mods: Ocean''s Delight, Crate Delight, Obsidian Equipment Reworked, Minecraft Accelerated, Create Deco (shells), Sooty Chimneys (blocks only); Ocean''s Delight food stats and Obsidian armor/tool stats are estimates; Ocean''s Delight mob loot injections and Sooty Chimneys smoke/scraping are not ported (stage 23)'
 )
 $provenance.sound_playback_verified = -not $audioWaived
 if ($audioWaived) {
@@ -181,4 +190,7 @@ if ($audioWaived) {
     [IO.File]::WriteAllText((Join-Path $final 'SOUND-NOT-VERIFIED.ru.md'), $note, [Text.UTF8Encoding]::new($true))
 }
 [IO.File]::WriteAllText((Join-Path $final 'provenance.json'), ($provenance | ConvertTo-Json -Depth 8) + [Environment]::NewLine, $utf8)
+
+# 8. Privacy scan of the whole package (user name in a profile path, e-mail, workspace root); archives are scanned entry by entry.
+& (Join-Path $PSScriptRoot 'Test-PackagePrivacy.ps1') -Path $final
 Write-Output "Assembled $final"

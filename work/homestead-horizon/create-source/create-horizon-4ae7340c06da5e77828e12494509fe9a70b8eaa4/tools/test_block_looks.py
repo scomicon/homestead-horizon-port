@@ -218,6 +218,12 @@ class Overlay(unittest.TestCase):
         self.assertEqual(plush['template'], 'minecraft:carved_pumpkin')
         self.assertIs(plush['properties']['occludes'], False)
         self.assertIn('default', plush['collision_shapes'])
+        self.assertEqual(plush['components'], {
+            '!minecraft:attribute_modifiers': {},
+            '!minecraft:equippable': {},
+            '!minecraft:compostable': {},
+        })
+        self.assertEqual(counts['head_stripped'], 1)
         flower = json.loads((self.out / 'data/t/horizon/block/flower.json').read_text(encoding='utf-8'))
         self.assertEqual(flower['collision_shapes'], {'default': []})
         # the source is untouched
@@ -243,9 +249,40 @@ class Overlay(unittest.TestCase):
         self.assertEqual(plush['properties'], {'light': 3, 'occludes': False})
         self.assertEqual(plush['collision_shapes'], {'default': [[0, 0, 0, 1, 0.25, 1]]})
 
+    def test_full_cube_and_unknown_model_on_carved_pumpkin_still_get_head_strips(self):
+        add_block(self.root, 'boxy', 'minecraft:carved_pumpkin', FULL, BLOCKSTATE_FACING)
+        add_block(self.root, 'odd', 'minecraft:carved_pumpkin', {'parent': 'nowhere:block/missing'}, BLOCKSTATE_FACING)
+        counts = bl.process(self.root, self.out)['t']
+        for name in ('boxy', 'odd'):
+            doc = json.loads((self.out / f'data/t/horizon/block/{name}.json').read_text(encoding='utf-8'))
+            self.assertEqual(doc['components'], {
+                '!minecraft:attribute_modifiers': {},
+                '!minecraft:equippable': {},
+                '!minecraft:compostable': {},
+            }, name)
+        self.assertEqual(counts['head_stripped'], 3)
+
+    def test_block_without_an_item_gets_no_components(self):
+        put(self.root / 'data/t/horizon/block/plush.json', {'template': 'minecraft:carved_pumpkin', 'item': False})
+        bl.process(self.root, self.out)
+        plush = json.loads((self.out / 'data/t/horizon/block/plush.json').read_text(encoding='utf-8'))
+        self.assertNotIn('components', plush)
+
+    def test_existing_components_are_kept(self):
+        put(self.root / 'data/t/horizon/block/plush.json', {
+            'template': 'minecraft:carved_pumpkin',
+            'components': {'minecraft:max_stack_size': 16, 'minecraft:equippable': {'slot': 'head'},
+                           '!minecraft:compostable': {}}})
+        bl.process(self.root, self.out)
+        plush = json.loads((self.out / 'data/t/horizon/block/plush.json').read_text(encoding='utf-8'))
+        self.assertEqual(plush['components'], {
+            'minecraft:max_stack_size': 16, 'minecraft:equippable': {'slot': 'head'},
+            '!minecraft:compostable': {}, '!minecraft:attribute_modifiers': {}})
+
     def test_dry_run_writes_nothing(self):
         counts = bl.process(self.root, self.out, dry_run=True)['t']
         self.assertEqual(counts['written'], 2)
+        self.assertEqual(counts['head_stripped'], 1)
         self.assertFalse(self.out.exists())
 
     def test_idempotent_on_the_overlaid_result(self):
@@ -271,7 +308,7 @@ class Check(unittest.TestCase):
     def test_unfixed_mod_fails(self):
         violations, checked = bl.check(self.root)
         kinds = sorted(v[2] for v in violations)
-        self.assertEqual(kinds, ['occludes', 'oversized'])
+        self.assertEqual(kinds, ['head_slot', 'occludes', 'oversized'])
         self.assertEqual(checked['t'], 2)
 
     def test_fixed_mod_passes(self):
@@ -281,6 +318,16 @@ class Check(unittest.TestCase):
             (self.root / path.relative_to(fixed)).write_text(path.read_text(encoding='utf-8'), encoding='utf-8')
         violations, _ = bl.check(self.root)
         self.assertEqual(violations, [])
+
+    def test_head_slot_is_checked_even_for_unknown_models(self):
+        add_block(self.root, 'odd', 'minecraft:carved_pumpkin', {'parent': 'nowhere:block/missing'}, BLOCKSTATE_FACING)
+        violations, _ = bl.check(self.root)
+        self.assertIn(('t', 'odd', 'head_slot'), [v[:3] for v in violations])
+
+    def test_item_false_is_not_a_head_slot_violation(self):
+        put(self.root / 'data/t/horizon/block/plush.json', {'template': 'minecraft:carved_pumpkin', 'item': False})
+        violations, _ = bl.check(self.root)
+        self.assertNotIn('head_slot', [v[2] for v in violations])
 
     def test_empty_collision_on_a_solid_model_fails(self):
         put(self.root / 'data/t/horizon/block/cube.json',
@@ -295,7 +342,7 @@ class Check(unittest.TestCase):
                 z.write(path, str(path.relative_to(self.root)).replace('\\', '/'))
         violations, checked = bl.check(archive)
         self.assertEqual(checked['t'], 2)
-        self.assertEqual(len(violations), 2)
+        self.assertEqual(len(violations), 3)
         self.assertEqual(bl.main(['--check', str(archive)]), 1)
 
 

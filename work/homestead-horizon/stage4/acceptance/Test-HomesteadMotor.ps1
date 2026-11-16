@@ -1,4 +1,4 @@
-﻿#requires -Version 7.0
+#requires -Version 7.0
 # Copyright (c) 2026 create-horizon contributors / local Homestead integration.
 # SPDX-License-Identifier: MIT
 # Creative Motor speed setting through the real value-board UI (hold use, pick a value, release), checked on ScrollValue and shaft speed.

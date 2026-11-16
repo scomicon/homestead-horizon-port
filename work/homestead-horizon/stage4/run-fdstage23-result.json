@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "process_id": 5304,
+  "reload_only": false,
+  "phases": [
+    "FdStage23"
+  ],
+  "binary_sha256": "0f994c09685f45e6862bbac900ac3aa51b0942eb2ad68629d18a29148c450dcf",
+  "shutdown": {
+    "requested": true,
+    "process_exited": true
+  }
+}

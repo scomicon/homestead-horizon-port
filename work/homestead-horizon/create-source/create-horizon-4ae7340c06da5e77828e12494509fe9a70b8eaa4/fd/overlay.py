@@ -211,7 +211,9 @@ def main(source, out):
         board.write_text(json.dumps({
             'template': 'minecraft:carved_pumpkin',
             'properties': {'hardness': 0.5, 'occludes': False, 'render_shape': 'MODEL', 'sounds': 'minecraft:oak_planks'},
-            'shapes': {'default': shape}, 'collision_shapes': {'default': shape}},
+            'shapes': {'default': shape}, 'collision_shapes': {'default': shape},
+            'components': {'!minecraft:attribute_modifiers': {}, '!minecraft:equippable': {},
+                           '!minecraft:compostable': {}}},
             indent=2) + '\n', encoding='utf-8')
     # The skillet block and item are declared by a sibling script (the overlay runs isolated).
     import importlib.util
@@ -231,7 +233,23 @@ def main(source, out):
     feast = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(feast)
     feast.patch(out)
-    effects = out / 'data/farmersdelight/horizon/mob_effect'
+    spec = importlib.util.spec_from_file_location('fd_stage23', Path(__file__).with_name('stage23.py'))
+    stage23 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(stage23)
+    stage23.patch(out)
+    # Final sweep: a block carried on the carved_pumpkin template (rice_bale, ...) must not be wearable on the
+    # head, otherwise its tooltip shows "When on Head: -100% Waypoint Transmit Range".
+    for path in sorted((out / 'data/farmersdelight/horizon/block').glob('*.json')):
+        declaration = json.loads(path.read_text(encoding='utf-8'))
+        if declaration.get('template') != 'minecraft:carved_pumpkin' or declaration.get('item') is False:
+            continue
+        components = declaration.setdefault('components', {})
+        before = len(components)
+        for key in ('minecraft:attribute_modifiers', 'minecraft:equippable', 'minecraft:compostable'):
+            components.setdefault('!' + key, {})
+        if len(components) != before:
+            path.write_text(json.dumps(declaration, indent=2) + '\n', encoding='utf-8')
+    effects =out / 'data/farmersdelight/horizon/mob_effect'
     effects.mkdir(parents=True, exist_ok=True)
     # Nourishment is beneficial and light green in the original; its tick is native.
     (effects / 'nourishment.json').write_text(
