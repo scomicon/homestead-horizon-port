@@ -7,7 +7,7 @@ $workspace = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $mods = Join-Path $workspace 'work/homestead-horizon/pack/mods'
 $extra = Join-Path $PSScriptRoot 'extra-mods'
 $skipFile = Join-Path $PSScriptRoot 'data-mods-skip.json'
-$version = 'horizon.2'
+$version = 'horizon.3'
 New-Item -ItemType Directory -Force $extra | Out-Null
 $create = (Get-Content -LiteralPath (Join-Path $workspace 'work/homestead-horizon/create-source-path.txt') -Raw).Trim()
 $python = Join-Path $workspace 'work/llvm-mingw/llvm-mingw-20261104-msvcrt-x86_64/python/bin/python.exe'
@@ -34,6 +34,14 @@ foreach ($dir in Get-ChildItem $mods -Directory | Sort-Object Name) {
     # Creative tab + title (tools/creative_tab.py): generated beside the carry, added over it.
     Remove-Item $tabs -Recurse -Force -ErrorAction SilentlyContinue
     & $python -I (Join-Path $create 'tools/creative_tab.py') --out $tabs $carry | Out-Null
+    # Playtest fixes, part 2 (stage22): modded boats, advancement predicates, block occlusion and collision.
+    $dropFix = @(& $python -I (Join-Path $create 'tools/hide_unplaceable.py') --out $tabs $carry |
+        Where-Object { $_ -like 'DROP *' } | ForEach-Object { $_.Substring(5) })
+    & $python -I (Join-Path $create 'tools/advancement_fix.py') --out $tabs $carry | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "advancement_fix failed for $id (an unsupported predicate shape; see its message)" }
+    & $python -I (Join-Path $create 'tools/block_looks.py') --out $tabs $carry | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "block_looks failed for $id" }
+    $drop = @($drop) + $dropFix
     $over = @{}
     if (Test-Path $tabs) { foreach ($g in Get-ChildItem $tabs -Recurse -File) { $over[$g.FullName.Substring((Resolve-Path $tabs).Path.TrimEnd('\').Length + 1).Replace('\','/')] = $g.FullName } }
     $zip = [IO.Compression.ZipFile]::Open($archive, 'Create')

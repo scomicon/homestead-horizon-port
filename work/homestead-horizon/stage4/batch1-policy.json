@@ -1,0 +1,95 @@
+{
+  "_comment": "Batch 1 (stage 27). One entry per mod: how it is carried and what is pruned. 'licence' is the Modrinth/jar label, not legal advice. 'publicRelease': false means the packed .hmod holds assets from the player's own jar and must never go into a public release or repository; the release-archive step filters on it. All numbers added by tools/batch1_content.py are estimates (see docs/batch1.md).",
+  "mods": [
+    {
+      "key": "expandeddelight",
+      "namespace": "expandeddelight",
+      "name": "Expanded Delight",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "foods": true,
+      "blocked_recipe_types": ["botanypots:crop", "expandeddelight:juicing"],
+      "drop_items": ["juicer_item", "mortar_and_pestle_item"],
+      "notes": "Cooking and cutting recipes are consumed by the native Farmer's Delight pot and board (any namespace). Juicing recipes need the juicer block, which is not ported; botanypots recipes need a mod that is not in the port. Create recipe types stay: the loader decides."
+    },
+    {
+      "key": "farmersknives",
+      "namespace": "farmersknives",
+      "name": "Farmer's Knives",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "knives": true,
+      "drop_uncraftable_items": true,
+      "blocked_recipe_types": [],
+      "notes": "60 knives made from ingots of other mods; a knife stays only if its recipe items exist in the port (vanilla and carried namespaces). Stats are estimates."
+    },
+    {
+      "key": "mo_glass",
+      "namespace": "mo_glass",
+      "name": "Mo Glass",
+      "licence": "GPL-3.0-or-later",
+      "publicRelease": false,
+      "mode": "carry",
+      "blocked_recipe_types": [],
+      "notes": "36 glass blocks, 72 recipes, tags. GPL: the assets come from the player's own jar and are not redistributed; behaviour (none) rebuilt from the public description."
+    },
+    {
+      "key": "phomesteadplushies",
+      "namespace": "phomesteadplushies",
+      "name": "Perfect Homestead Plushies",
+      "licence": "ARR",
+      "publicRelease": false,
+      "mode": "carry",
+      "blocked_recipe_types": [],
+      "notes": "All Rights Reserved. 53 plush blocks; their models use GeckoLib geo/animations in part, which the loader may skip (blocks fall back to their block model). Local use only."
+    },
+    {
+      "key": "spuds_shops",
+      "namespace": "spuds_shops",
+      "name": "Spud's Shops",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "carry",
+      "blocked_recipe_types": [],
+      "notes": "43 blocks, 211 items, 209 recipes. Assets live under the namespace spudaciousshops while data lives under spuds_shops; the carry tool decides what it can join. Shop behaviour (if any) is not ported."
+    },
+    {
+      "key": "go-fish",
+      "namespace": "gofish",
+      "name": "Go Fish",
+      "licence": "CC0-1.0",
+      "publicRelease": true,
+      "mode": "carry",
+      "blocked_recipe_types": [],
+      "notes": "Items, crates and recipes only. Catching the fish is Java (GoFishLoot, FishingBobber mixins, custom loot conditions): NOT ported, see docs/batch1.md."
+    },
+    {
+      "key": "nethersdelight",
+      "namespace": "nethersdelight",
+      "name": "Nether's Delight (data half)",
+      "licence": "LGPL v2.1",
+      "publicRelease": false,
+      "mode": "carry",
+      "foods": true,
+      "machetes": true,
+      "blocked_recipe_types": [],
+      "drop_items": [
+        "blackstone_blast_furnace", "blackstone_furnace", "blackstone_stove", "nether_brick_smoker",
+        "crimson_fungus_colony", "warped_fungus_colony", "propelplant_cane", "propelplant_stem",
+        "propelplant_torch", "rich_soul_soil", "soul_compost", "mimicarnation"
+      ],
+      "notes": "Dropped: the four furnace-like blocks (native stove/furnace behaviour needed), colonies and plants (growth), soils. Kept: foods, plates, meats, machetes (estimated stats), hoglin trophy and the cooking and cutting recipes."
+    },
+    {
+      "key": "sparsestructures",
+      "namespace": "sparsestructures",
+      "name": "SparseStructures",
+      "licence": "MIT",
+      "publicRelease": true,
+      "mode": "datapack",
+      "notes": "No content in the jar (code and config only): shipped as a data pack datapacks/homestead-sparse generated from the player's own vanilla structure sets, spread factor from the Homestead config (1.2, mansion 2). New worlds only."
+    }
+  ]
+}

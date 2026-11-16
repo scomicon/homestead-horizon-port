@@ -19,7 +19,7 @@
 
 ## Состояние
 
-Версия сборки: **stage19**. Всё принято автоматическими тестами в игре (34 набора приёмки на одном бинарнике), но на живом клиенте проверено только в творческом режиме. Выживание, внешний вид и многие рецепты не проверены.
+Состояние кода: **stage22** (последний собранный релизный пакет — **stage20**, 38 наборов приёмки). На пересобранном бинарнике stage22 пройдено 40 из 41 набора приёмки; набор `-ClientS` (звук) не прошёл только в фазе `Playback` из-за отсутствия аудиовыхода WASAPI на сборочной машине. На живом клиенте проверено только в творческом режиме. Выживание, внешний вид и многие рецепты не проверены.
 
 | Область | Что есть |
 | --- | --- |
@@ -28,15 +28,18 @@
 | Create: автоматизация | Mechanical Arm и точки, Redstone Link, выключатели и Nixie, Display Link и Board, Schematicannon и Schematic Table, Packager и Factory Gauge, Linked Controller, Schematic и Schematic and Quill, Stock Link и Frogport |
 | Create: декор | около 350 декоративных блоков на ванильных шаблонах |
 | Farmer's Delight | еда, разделочная доска, печь, сковорода, котёл с экраном, посевы, пиры |
-| Мелкие моды логики | Right Click Harvest, Secure Crops, Too Cheap!, Preferred Gamerules, Crops Love Rain, Better Days, Double Doors, Shulker Drops Two, Invisible Frames, Accelerated Decay, No Animal Tempt Delay, Falling Trees, SpawnFilter, Universal Graves |
-| Контент-моды | 45 «данных» модов упаковываются как оболочки (блоки без поведения, структуры, рецепты), у каждого своя вкладка в креативе |
+| Мелкие моды логики | Right Click Harvest, Secure Crops, Too Cheap!, Preferred Gamerules, Crops Love Rain, Better Days, Double Doors, Shulker Drops Two, Invisible Frames, Accelerated Decay, No Animal Tempt Delay, Falling Trees, SpawnFilter, Universal Graves, Comforts, Peaceful Hunger, Grind Enchantments |
+| Контент-моды | 45 «данных» модов + 8 модов пакета 1 (`batch1-policy.json`: Expanded Delight, Farmer's Knives, Mo Glass, Perfect Homestead Plushies, Spud's Shops, Go Fish, Nether's Delight, SparseStructures) упаковываются как оболочки/данные без Java-логики; исправлены предикаты достижений 26.3, окклюзия/коллизии и скрыты неразмещаемые лодки |
+| Клиент: настройки и ресурспаки | значения по умолчанию для встроенных функций Horizon (динамический свет, управление мышью в инвентаре, 3D-слои скина), загрузка ресурспаков формата 1.20 (`pack_format` 15) |
+| Клиент: подсказки, HUD и звук | переписаны по публичным описаниям: описания и инфо о зачарованиях, рамка редкости, Detail Armor Bar, Better Mount HUD, Traveler's Titles, Welcome Screen, звуковые модули Extreme Sound Muffler, Presence Footsteps, AmbientSounds |
 
-**Не перенесено или отключено (мелкие моды логики):**
+**Не перенесено, отключено или не подтверждено:**
 
 - **Stack Refill и CraftingPad отключены.** Их хуки выполняются на серверном потоке, где у игры нет локального игрока, экрана и инвентаря, поэтому в одиночной игре они ничего не делают. Код оставлен в репозитории, в сборку не входит (`docs/logic-c.md`).
-- **Trade Cycling, Grind Enchantments, Bridging Mod, Comforts, SimpleHats** требуют хуков движка, которых нет (торговля жителей, меню наждака, клиентский луч, сон для хозяина игры, слоты Accessories).
+- **Trade Cycling, Bridging Mod, SimpleHats** требуют хуков движка, которых нет. `Comforts` и `Grind Enchantments` перенесены с помощью локальных патчей `stage4/engine-patches/20..22-*.ps1`, но с упрощениями (у точила нет кнопок и проверки нехватки уровней, спальные мешки используют шаблон кровати без оригинальных моделей и дневного сна).
 - **Эффект Comfort и Nourishment** идут через тот же серверный хук. В одиночной игре Comfort, скорее всего, не лечит, это не проверено.
-- **Проверено не полностью:** невидимость рамок (сокет управления не видит рамки), смерть игрока и SpawnFilter (тест не умеет респавнить игрока).
+- **Официальные моды Horizon (Zoom, Minimap, Recipes)** недоступны в сборке: они вплавляются при сборке клиента, а условия их распространения не подтверждены.
+- **Не проверено в игре:** перехват звука (`native_sound_play`, `hook_seen=0` из-за отсутствия аудиовыхода WASAPI на тестовой машине), Better Mount HUD (езда на скакуне не проверена сокетом), работа Comforts (спальный мешок и точка возрождения) и забор результата в Grind Enchantments (сокет не кликает по меню), невидимость рамок, смерть игрока и SpawnFilter, внешний вид баннера, приветственного экрана, подсказок и плюшей.
 
 **Не сделано:** поезда Create, копикэты, предпросмотр схем, большинство экранов (GUI) Create, сущности и рендер модов, зависящих от слоя сущностей в Horizon mod API. Полный список и известные долги: `work/homestead-horizon/stage4/research/roadmap.md` и `docs/` внутри `create-source`.
 

@@ -1,0 +1,8 @@
+{
+  "_comment": "Items of carried mods that cannot work in Horizon today. hide_unplaceable.py removes them from the creative tabs and drops every recipe (and recipe advancement) that mentions them. Keys are mod namespaces; `patterns` are fnmatch patterns over item names. `drop_items: false` keeps the item registered so saved worlds and tags that name it still load.",
+  "regions_unexplored": {
+    "reason": "Boats are entities. Horizon only places minecraft:<wood>_boat, `_chest_boat` and `_raft` (horizon-client game/boats.rs any_boat_wood) and has no entity layer for mods, so a modded boat item does nothing when used.",
+    "patterns": ["*_boat", "*_chest_boat"],
+    "drop_items": false
+  }
+}

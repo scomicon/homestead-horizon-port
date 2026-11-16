@@ -1,7 +1,9 @@
-#requires -Version 7.0
+﻿#requires -Version 7.0
 # Assembles outputs/<Name> from the accepted candidate client.
 # Refuses to run unless every acceptance receipt passed on the candidate binary.
-param([string] $Name = 'homestead-horizon-stage19')
+# -AudioWaiver: accept a ClientS receipt that failed ONLY for lack of an audio output device;
+# the package is then marked sound-unverified (provenance + SOUND-NOT-VERIFIED.ru.md).
+param([string] $Name = 'homestead-horizon-stage22', [switch] $AudioWaiver)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $workspace = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
@@ -19,11 +21,31 @@ if (-not $final.StartsWith($workspace + [IO.Path]::DirectorySeparatorChar, [Stri
 
 # 1. Receipts must belong to this very binary.
 $binary = (Get-FileHash -LiteralPath (Join-Path $candidate 'horizon-client.exe') -Algorithm SHA256).Hash.ToLowerInvariant()
-$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json','run-logica-result.json','run-logicb-result.json','run-logicd-result.json')
+$runs = @('run-flow-result.json','run-reload-result.json','run-vault-result.json','run-vault-reload-result.json','run-harvest-result.json','run-tweaks-result.json','run-rain-result.json','run-days-result.json','run-fd-result.json','run-decor-result.json','run-arm-result.json','run-points-result.json','run-link-result.json','run-tank-result.json','run-pipes-result.json','run-steam-result.json','run-board-result.json','run-stove-result.json','run-skillet-result.json','run-pot-result.json','run-switches-result.json','run-displays-result.json','run-cannon-result.json','run-packager-result.json','run-controller-result.json','run-schematic-tools-result.json','run-stock-result.json','run-crops-result.json','run-feasts-result.json','run-datamods-result.json','run-motor-result.json','run-clientdefaults-result.json','run-logica-result.json','run-logicb-result.json','run-logicd-result.json','run-clientt-result.json','run-clienth-result.json','run-clients-result.json','run-batch1-result.json','run-engine20-result.json','run-fixes2-result.json')
+$audioWaived = $false
 foreach ($name in $runs) {
     $r = Get-Content -LiteralPath (Join-Path $PSScriptRoot $name) -Raw | ConvertFrom-Json
+    if ($name -eq 'run-clients-result.json' -and $AudioWaiver -and -not $r.passed) {
+        $err = [string]$r.error
+        if ($r.binary_sha256 -ne $binary) { throw 'ClientS receipt belongs to another client binary.' }
+        if (@($r.phases) -notcontains 'ClientS') { throw 'AudioWaiver needs a passed ClientS phase on this binary.' }
+        if ($err -notmatch 'no audio output device') { throw "AudioWaiver covers only a missing audio output device, not: $err" }
+        $audioWaived = $true
+        Write-Warning 'ClientS Playback waived (no audio output device); the package is marked sound-unverified.'
+        continue
+    }
     if (-not $r.passed) { throw "Receipt did not pass: $name" }
     if ($r.binary_sha256 -ne $binary) { throw "Receipt $name belongs to another client binary." }
+    if ($name -eq 'run-clients-result.json') {
+        # Older same-binary ClientS receipts only checked configuration/submission.
+        if (@($r.phases).Count -ne 2 -or $r.phases -notcontains 'ClientS' -or $r.phases -notcontains 'Playback') {
+            throw 'ClientS receipt lacks the mandatory live Playback phase; rerun -ClientS with audio output available.'
+        }
+        $playback=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime/game/stage33-soundplayback-playback-result.json') -Raw | ConvertFrom-Json
+        if (-not $playback.passed -or -not $playback.playback_hook_verified -or $playback.binary_sha256 -ne $binary -or $playback.process_id -ne $r.process_id) {
+            throw 'Live sound-playback proof is missing, failed, or belongs to another client run.'
+        }
+    }
 }
 
 New-Item -ItemType Directory -Path $final | Out-Null
@@ -89,12 +111,16 @@ Copy-Item -LiteralPath (Join-Path $create 'THIRD_PARTY_NOTICES.md') (Join-Path $
 # 5. Launcher pieces carried over from stage 3.
 if ($stage3IsBase) { Copy-Item -Path (Join-Path $stage3 'mods/*') (Join-Path $final 'mods') -Recurse } else { Copy-Item -Path (Join-Path $stage3 'mods/create_oxidized-*.hmod') (Join-Path $final 'mods') }
 # Content mods built for this stage (Farmer's Delight); only what is accepted ships.
+& (Join-Path $PSScriptRoot 'Build-SoundMod.ps1') | Out-Null
 Copy-Item -Path (Join-Path $PSScriptRoot 'extra-mods/*.hmod') (Join-Path $final 'mods')
 Copy-Item -Path (Join-Path $stage3 'datapacks/*') (Join-Path $final 'datapacks') -Recurse
+# Batch 1: SparseStructures data pack (generated by Build-Batch1.ps1 from the player's own vanilla resources).
+$batch1Packs = Join-Path $PSScriptRoot '../pack-batch1/datapacks'
+if (Test-Path -LiteralPath $batch1Packs) { Copy-Item -Path (Join-Path $batch1Packs '*') (Join-Path $final 'datapacks') -Recurse }
 Copy-Item -LiteralPath (Join-Path $stage3 'review/world.zip') (Join-Path $final 'review')
 # No local-settings.json is shipped (it holds the user's own paths); Install-Homestead.cmd writes it.
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/local-settings.example.json') $final
-foreach ($f in 'Install-Homestead.ps1','Install-Homestead.cmd') { Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('package/' + $f)) $final }
+foreach ($f in 'Install-Homestead.ps1','Install-Homestead.cmd','Apply-ClientDefaults.ps1') { Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('package/' + $f)) $final }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/Play-Create.cmd') $final
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package/Start-Homestead.ps1') $final
 
@@ -139,7 +165,20 @@ $provenance.local_changes = @(
     '45 carried data-tier mods packed as .hmod and loaded by the client (stage 25)',
     'Homestead logic A: Double Doors, Shulker Drops Two, Invisible Frames, Accelerated Decay, No Animal Tempt Delay (stage 25)',
     'Homestead logic B: Falling Trees (stage 25)',
-    'Homestead logic D: Universal Graves, SpawnFilter (stage 25)'
+    'Homestead logic D: Universal Graves, SpawnFilter (stage 25)',
+    'Homestead client defaults: built-in dynamic lights, Mouse Tweaks and 3D skin layers switched on for new instances (stage 32)',
+    'Homestead client tooltips: enchantment descriptions, enchantment info, rarity frames (stage 26)',
+    'Homestead client HUD: Detail Armor Bar, Better Mount HUD, Traveler''s Titles, Welcome Screen (stage 26)',
+    'Homestead client sound: Extreme Sound Muffler, Presence Footsteps, AmbientSounds engines, placeholder tones only (stage 26)',
+    'Batch 1 data mods: Expanded Delight, Farmer''s Knives, Mo Glass, Perfect Homestead Plushies, Spud''s Shops, Go Fish (items only, fishing not ported), Nether''s Delight (data half), SparseStructures data pack for new worlds; food and tool values estimated (stage 27)',
+    'Engine patches (sleep hooks for the single-player host, bed by block state, Peaceful Hunger switch, grindstone result take) with Comforts, Peaceful Hunger and Grind Enchantments (stage 27)',
+    'Playtest fixes 2: advancement predicates (no structure advancements at once in new worlds), block occlusion and collision for small-model blocks, hidden modded boats (stage 22)'
 )
+$provenance.sound_playback_verified = -not $audioWaived
+if ($audioWaived) {
+    $provenance.sound_playback_waiver = 'Build machine has no audio output device (WASAPI). ClientS configuration phase passed on this binary; the live Playback phase did not run. Client sound mods are unverified in game.'
+    $note = "# Звук не проверен`n`nПакет собран с флагом -AudioWaiver: на машине сборки нет аудиовыхода, поэтому фаза Playback набора -ClientS не запускалась.`nКлиентские звуковые моды (Extreme Sound Muffler, Presence Footsteps, AmbientSounds) в игре не подтверждены.`nПроверка: pwsh acceptance/Run-Acceptance.ps1 -ClientS на машине с колонками или наушниками.`n"
+    [IO.File]::WriteAllText((Join-Path $final 'SOUND-NOT-VERIFIED.ru.md'), $note, [Text.UTF8Encoding]::new($true))
+}
 [IO.File]::WriteAllText((Join-Path $final 'provenance.json'), ($provenance | ConvertTo-Json -Depth 8) + [Environment]::NewLine, $utf8)
 Write-Output "Assembled $final"

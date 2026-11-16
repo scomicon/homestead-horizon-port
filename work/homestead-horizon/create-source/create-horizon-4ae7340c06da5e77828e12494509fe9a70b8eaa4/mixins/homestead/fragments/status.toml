@@ -1,0 +1,31 @@
+# `homestead status` (stage 22): read-only diagnostic command for play-test reports.
+# Append to mixins/homestead/horizon-mixin.toml together with a client rebuild (it adds Rust).
+
+[[module]]
+id = "homestead-status"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_status"
+source = "status.rs"
+
+[[injection]]
+id = "status-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "status_register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "status-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "status_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]

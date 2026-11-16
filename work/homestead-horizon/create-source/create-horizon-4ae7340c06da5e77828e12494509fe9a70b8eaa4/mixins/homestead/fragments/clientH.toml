@@ -1,0 +1,143 @@
+# Client mods, group H (stage 20 slice): Detail Armor Bar, Better Mount HUD, Traveler's Titles,
+# Welcome Screen. Client window only: every helper starts with `native_window()` or is a client
+# hook (gui_layer_*, health_hud, screen_*), none runs on the server thread.
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last injection).
+# Module and injection ids are unique within the bundle (prefix clienth-).
+
+[[module]]
+id = "clienth-armor"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_armor_bar"
+source = "armor_bar.rs"
+
+[[module]]
+id = "clienth-mount"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_mount_hud"
+source = "mount_hud.rs"
+
+[[module]]
+id = "clienth-titles"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_travel_titles"
+source = "travel_titles.rs"
+
+[[module]]
+id = "clienth-welcome"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_welcome"
+source = "welcome_screen.rs"
+
+# Detail Armor Bar: paints over the armor row after the player_health layer.
+[[injection]]
+id = "clienth-armor-layer"
+hook = "gui_layer_post"
+hook_version = 1
+kind = "HEAD"
+helper = "armor_bar_layer.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+]
+
+# Better Mount HUD: hide vanilla's mount hearts (survival only) ...
+[[injection]]
+id = "clienth-mount-hide"
+hook = "gui_layer_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "mount_hud_hide.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# ... and answer the health pass: Horizon's own rows with the food kept, the mount's hearts one
+# row above, and the readout.
+[[injection]]
+id = "clienth-mount-health"
+hook = "health_hud"
+hook_version = 1
+kind = "HEAD"
+helper = "mount_hud_health.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "inputs", ty = "&horizon_client::hud_layout::HealthInputs", value = "inputs" },
+  { name = "wi", ty = "i32", value = "wi" },
+  { name = "hi", ty = "i32", value = "hi" },
+  { name = "draws", ty = "&mut Option<Vec<horizon_client::hud_layout::GuiDraw>>", value = "&mut *draws" },
+]
+
+# Traveler's Titles: the biome watcher on the client tick, the banner after the title layer.
+# `native_client_tick_post` has no named hook, so the injection names the method.
+[[injection]]
+id = "clienth-titles-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "travel_titles_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "clienth-titles-layer"
+hook = "gui_layer_post"
+hook_version = 1
+kind = "HEAD"
+helper = "travel_titles_layer.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+]
+
+# Welcome Screen: opened from the client tick, drawn and clicked through the screen hooks.
+[[injection]]
+id = "clienth-welcome-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "welcome_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "clienth-welcome-draw"
+hook = "screen_render_post"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_draw.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+]
+
+[[injection]]
+id = "clienth-welcome-click"
+hook = "screen_mouse_button_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_click.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "clienth-welcome-key"
+hook = "screen_key_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_key.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "repeat", ty = "bool", value = "repeat" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]

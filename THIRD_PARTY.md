@@ -39,13 +39,24 @@
 
 Если мод помечен «All Rights Reserved» или «ND», не собирайте из него `.hmod` для передачи другим и не публикуйте результат.
 
-## Моды логики, которые мы переписали на Rust
+## Пакет 1 данных (`batch1-policy.json`)
 
-Наш код реализует **поведение** этих модов, а не копирует их исходники. Исходники при этом могли не читаться: что именно делает мод, часто взято из описания и конфигов.
+| Метка | Моды | Примечание |
+| --- | --- | --- |
+| MIT | expandeddelight, farmersknives, spuds_shops, sparsestructures | `sparsestructures` генерируется как датапак; в остальных контент берётся из вашего JAR |
+| CC0-1.0 | go-fish | предметы, ящики и рецепты без Java-логики ловли |
+| GPL-3.0-or-later | mo_glass | только для локальной сборки (`publicRelease: false`), не распространять |
+| LGPL v2.1 | nethersdelight | половина данных (`publicRelease: false`), только для локальной сборки |
+| All Rights Reserved | phomesteadplushies | только для локальной сборки (`publicRelease: false`), не распространять |
 
-| Мод | Метка |
+## Моды логики и клиентские модули, которые мы переписали на Rust
+
+Наш код реализует **поведение** этих модов по публичным описаниям, а не копирует их исходники или ресурсы. Исходники при этом не читались: что именно делает мод, взято из описаний и конфигов.
+
+| Метка | Моды |
 | --- | --- |
-| rightclickharvest, securecrops, too-cheap, preferred-gamerules, crops_love_rain | MIT |
-| betterdays | LGPL-3.0-or-later |
+| MIT / разрешающая | rightclickharvest, securecrops, too-cheap, preferred-gamerules, crops_love_rain, peaceful_hunger, detail_armor_bar, more_enchantment_info, presence_footsteps |
+| LGPL / copyleft | betterdays, comforts, grindenchantments, better_mount_hud, travelers_titles, tooltip_overhaul, enchantment_descriptions, extreme_sound_muffler, ambientsounds |
+| All Rights Reserved | welcome_screen |
 
 Если вы автор мода и считаете, что наш код слишком близок к вашему, откройте issue.

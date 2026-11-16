@@ -7,7 +7,8 @@ param(
     [switch]$Review,
     [switch]$Creative,
     [switch]$Offscreen,
-    [switch]$NoAudio
+    [switch]$NoAudio,
+    [switch]$NoClientDefaults
 )
 
 $ErrorActionPreference = 'Stop'
@@ -48,6 +49,14 @@ $privateRoot = Join-Path $root 'private'
 $game = Join-Path $privateRoot 'instance'
 $resourcesCopy = Join-Path $privateRoot 'resources-26.3'
 New-Item -ItemType Directory -Force -Path $game,$resourcesCopy | Out-Null
+# Built-in client extras that mirror the pack's client mods (dynamic lights, Mouse Tweaks, 3D skin
+# layers) are off in Horizon by default; turn them on once per instance, never over a player's choice.
+$defaultsScript = Join-Path $root 'Apply-ClientDefaults.ps1'
+if (!$NoClientDefaults -and (Test-Path -LiteralPath $defaultsScript)) {
+    . $defaultsScript
+    $applied = @(Set-HomesteadClientDefaults -GameDir $game)
+    if ($applied.Count -gt 0) { Write-Output ('Client defaults turned on: ' + ($applied -join ', ')) }
+}
 
 # Pre-built content cache shipped in cache/horizon-cache.zip (made by Build-Cache.ps1 from this
 # exact client and mod set). It is restored once per private instance. If its hash does not
@@ -116,11 +125,12 @@ if ($Review) {
 }
 
 # Horizon installs this template only into newly-created worlds.
-$pack = Join-Path $root 'datapacks/homestead-create'
-if (Test-Path -LiteralPath (Join-Path $pack 'pack.mcmeta')) {
-    $templates = Join-Path $game 'new-world-datapacks'
-    New-Item -ItemType Directory -Force -Path $templates | Out-Null
-    Copy-Item -LiteralPath $pack -Destination $templates -Recurse -Force
+$templates = Join-Path $game 'new-world-datapacks'
+foreach ($pack in Get-ChildItem -LiteralPath (Join-Path $root 'datapacks') -Directory -ErrorAction SilentlyContinue) {
+    if (Test-Path -LiteralPath (Join-Path $pack.FullName 'pack.mcmeta')) {
+        New-Item -ItemType Directory -Force -Path $templates | Out-Null
+        Copy-Item -LiteralPath $pack.FullName -Destination $templates -Recurse -Force
+    }
 }
 
 $session = Join-Path $privateRoot ('runs/' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))

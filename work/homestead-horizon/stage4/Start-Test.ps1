@@ -54,6 +54,23 @@ if (Test-Path -LiteralPath $extra) {
     }
 }
 [IO.File]::WriteAllLines((Join-Path $game 'horizon-mods.txt'),$enabled,[Text.UTF8Encoding]::new($false))
+# Client defaults suite (-ClientDefaults): start from a clean slate and apply the package defaults,
+# exactly as Start-Homestead.ps1 does. Every other suite runs with no extras file (vanilla behaviour).
+$extrasFile=Join-Path $game 'horizon-extras.txt'
+$defaultsMarker=Join-Path $game '.homestead-client-defaults'
+Remove-Item -LiteralPath $extrasFile,$defaultsMarker -ErrorAction SilentlyContinue
+if ($env:HOMESTEAD_CLIENT_DEFAULTS) {
+    . (Join-Path $PSScriptRoot 'package/Apply-ClientDefaults.ps1')
+    $null=Set-HomesteadClientDefaults -GameDir $game
+}
+# Client sound suite leftovers: an interrupted -ClientS run must not leave rules for the next suites.
+foreach ($f in 'homestead-muffler.txt','homestead-footsteps.txt','homestead-ambient.txt','homestead-sound-status.txt') {
+    Remove-Item -LiteralPath (Join-Path (Join-Path $game 'config') $f) -ErrorAction SilentlyContinue
+}
+# Welcome Screen (clientH): other suites must never see it; -ClientH deletes the marker itself.
+$welcomeDir=Join-Path $game 'horizon-mods/.horizon-mod-data/homestead'
+New-Item -ItemType Directory -Force -Path $welcomeDir | Out-Null
+[IO.File]::WriteAllText((Join-Path $welcomeDir 'welcome-shown'),'1')
 $session=Join-Path $run ('session-'+[guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force -Path $session|Out-Null
 foreach ($pair in @(@('HORIZON_HOME','home'),@('HORIZON_LAUNCHER_HOME','launcher'),@('XDG_DATA_HOME','data'),@('XDG_CONFIG_HOME','config'),@('HORIZON_LAUNCHER_TRASH','trash'),@('HORIZON_LAUNCHER_CLIPBOARD','clipboard'),@('HORIZON_LAUNCHER_DESKTOP','desktop'))) {
@@ -62,7 +79,9 @@ foreach ($pair in @(@('HORIZON_HOME','home'),@('HORIZON_LAUNCHER_HOME','launcher
     [Environment]::SetEnvironmentVariable($pair[0],$path,'Process')
 }
 foreach ($name in @('CREATE_HORIZON_TRACE','CREATE_HORIZON_TRACE_POSES','CREATE_HORIZON_PARTICLE_TRACE')) { Remove-Item -LiteralPath ('Env:'+$name) -ErrorAction SilentlyContinue }
-$env:HORIZON_NO_AUDIO='1';$env:HORIZON_NO_DISCORD='1';$env:HORIZON_LAUNCHER_NO_SELF_UPDATE='1'
+# -ClientS needs a live sound engine (the playback hook only runs when a sound actually starts), so it keeps audio on.
+if ($env:HOMESTEAD_AUDIO) { Remove-Item Env:HORIZON_NO_AUDIO -ErrorAction SilentlyContinue } else { $env:HORIZON_NO_AUDIO='1' }
+$env:HORIZON_NO_DISCORD='1';$env:HORIZON_LAUNCHER_NO_SELF_UPDATE='1'
 $env:HORIZON_API_DISCOVERY='http://127.0.0.1:9/'
 $env:TEMP=Join-Path $session 'tmp';$env:TMP=$env:TEMP
 New-Item -ItemType Directory -Path $env:TEMP|Out-Null

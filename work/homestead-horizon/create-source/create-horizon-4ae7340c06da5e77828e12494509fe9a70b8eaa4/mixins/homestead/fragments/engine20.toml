@@ -1,0 +1,64 @@
+# Engine-patch mods (stage 27 "engine20"): Comforts (sleeping bags, hammocks), Peaceful Hunger, Grind Enchantments.
+# They stand on three local engine patches (stage4/engine-patches/20-sleep-host.ps1, 21-peaceful-hunger.ps1,
+# 22-grind-take.ps1). Append this file verbatim to mixins/homestead/horizon-mixin.toml and bump the bundle version
+# (see fragments/engine20.md). Module and injection ids are unique within the bundle (prefix engine20-).
+
+[[module]]
+id = "engine20-comforts"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_comforts"
+source = "comforts.rs"
+
+[[module]]
+id = "engine20-peaceful-hunger"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_peaceful_hunger"
+source = "peaceful_hunger.rs"
+
+# Grind Enchantments lives in the library crate next to stations.rs and menu.rs (its pure item logic and the
+# menu's take), not in game.rs.
+[[module]]
+id = "engine20-grind"
+file = "crates/horizon-client/src/stations.rs"
+name = "homestead_grind"
+source = "grind.rs"
+
+# Comforts: a bed block that is a sleeping bag or hammock never sets the respawn point. The hook only fires for
+# the single-player host with engine patch 20-sleep-host.ps1.
+[[injection]]
+id = "engine20-comforts-spawn"
+hook = "player_spawn_point_set"
+hook_version = 1
+kind = "HEAD"
+helper = "comforts_spawn.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "cause", ty = "&str", value = "cause" },
+  { name = "cancel", ty = "&mut bool", value = "&mut *cancel" },
+]
+
+# Peaceful Hunger: sets the engine switch from the config on the first server tick.
+[[injection]]
+id = "engine20-peaceful-hunger-tick"
+hook = "level_tick_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "peaceful_hunger_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# Grind Enchantments: an enchanted item beside a plain book answers with an enchanted book. The take is the
+# engine patch 22-grind-take.ps1 (menu.rs), which calls homestead_grind::plan again.
+[[injection]]
+id = "engine20-grind-result"
+target = "horizon_client_lib::stations::grindstone_result"
+kind = "HEAD"
+cancellable = true
+helper = "grind_result.rs"
+bindings = [
+  { name = "e", ty = "&Enchantments", value = "e" },
+  { name = "input", ty = "Option<&ItemStack>", value = "input" },
+  { name = "additional", ty = "Option<&ItemStack>", value = "additional" },
+]

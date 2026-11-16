@@ -1,6 +1,6 @@
 [mod]
 id = "homestead"
-version = "0.1.0+homestead.9"
+version = "0.1.0+homestead.12"
 
 [compatibility]
 horizon_revision = "4e5296d1800b3f89f2ae48dfd99d431801df4d46"
@@ -813,4 +813,373 @@ bindings = [
   { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
   { name = "pos", ty = "[i32; 3]", value = "pos" },
   { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# Client tooltips (stage20, group T): EnchantmentDescriptions, More Enchantment Info and Tooltip
+# Overhaul, rebuilt from public descriptions (module homestead_client_tooltips, client_tooltips.rs).
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (see fragments/clientT.md).
+# Every injection is an additional HEAD helper on a hook that is called on the window's Game
+# (tooltip drawing and the control socket's command line); nothing here runs on the server thread.
+
+[[module]]
+id = "client-tooltips"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_client_tooltips"
+source = "client_tooltips.rs"
+
+# The item tooltip's lines, built each frame; descriptions and info go under enchantment lines.
+[[injection]]
+id = "ctip-tooltip"
+hook = "tooltip"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_tooltip.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "stack", ty = "&horizon_client::items::ItemStack", value = "stack" },
+  { name = "lines", ty = "&mut Vec<(horizon_client::text::Text, u32)>", value = "&mut *lines" },
+]
+
+# The tooltip box's colours: the frame takes the item's rarity colour.
+[[injection]]
+id = "ctip-color"
+hook = "tooltip_color"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_color.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "stack", ty = "Option<&horizon_client::items::ItemStack>", value = "stack" },
+  { name = "background", ty = "&mut u32", value = "&mut *background" },
+  { name = "border_top", ty = "&mut u32", value = "&mut *border_top" },
+  { name = "border_bottom", ty = "&mut u32", value = "&mut *border_bottom" },
+]
+
+# `homestead tooltip ...`: switches, and the test aid that prints the held item's tooltip lines.
+[[injection]]
+id = "ctip-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "ctip-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
+
+# Client mods, group H (stage 20 slice): Detail Armor Bar, Better Mount HUD, Traveler's Titles,
+# Welcome Screen. Client window only: every helper starts with `native_window()` or is a client
+# hook (gui_layer_*, health_hud, screen_*), none runs on the server thread.
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last injection).
+# Module and injection ids are unique within the bundle (prefix clienth-).
+
+[[module]]
+id = "clienth-armor"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_armor_bar"
+source = "armor_bar.rs"
+
+[[module]]
+id = "clienth-mount"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_mount_hud"
+source = "mount_hud.rs"
+
+[[module]]
+id = "clienth-titles"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_travel_titles"
+source = "travel_titles.rs"
+
+[[module]]
+id = "clienth-welcome"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_welcome"
+source = "welcome_screen.rs"
+
+# Detail Armor Bar: paints over the armor row after the player_health layer.
+[[injection]]
+id = "clienth-armor-layer"
+hook = "gui_layer_post"
+hook_version = 1
+kind = "HEAD"
+helper = "armor_bar_layer.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+]
+
+# Better Mount HUD: hide vanilla's mount hearts (survival only) ...
+[[injection]]
+id = "clienth-mount-hide"
+hook = "gui_layer_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "mount_hud_hide.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# ... and answer the health pass: Horizon's own rows with the food kept, the mount's hearts one
+# row above, and the readout.
+[[injection]]
+id = "clienth-mount-health"
+hook = "health_hud"
+hook_version = 1
+kind = "HEAD"
+helper = "mount_hud_health.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "inputs", ty = "&horizon_client::hud_layout::HealthInputs", value = "inputs" },
+  { name = "wi", ty = "i32", value = "wi" },
+  { name = "hi", ty = "i32", value = "hi" },
+  { name = "draws", ty = "&mut Option<Vec<horizon_client::hud_layout::GuiDraw>>", value = "&mut *draws" },
+]
+
+# Traveler's Titles: the biome watcher on the client tick, the banner after the title layer.
+# `native_client_tick_post` has no named hook, so the injection names the method.
+[[injection]]
+id = "clienth-titles-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "travel_titles_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "clienth-titles-layer"
+hook = "gui_layer_post"
+hook_version = 1
+kind = "HEAD"
+helper = "travel_titles_layer.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "layer", ty = "&str", value = "layer" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+]
+
+# Welcome Screen: opened from the client tick, drawn and clicked through the screen hooks.
+[[injection]]
+id = "clienth-welcome-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "welcome_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "clienth-welcome-draw"
+hook = "screen_render_post"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_draw.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+]
+
+[[injection]]
+id = "clienth-welcome-click"
+hook = "screen_mouse_button_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_click.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "clienth-welcome-key"
+hook = "screen_key_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "welcome_key.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "screen", ty = "&crate::mod_api::NativeScreenView<'_>", value = "screen" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "repeat", ty = "bool", value = "repeat" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+# Client mods, group S (sound; stage 20 slice): Extreme Sound Muffler, AmbientSounds, Presence
+# Footsteps. Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last
+# injection). Module and injection ids carry the prefix `sound-` and are unique in the bundle.
+#
+# Both hooks are CLIENT hooks:
+#   * native_sound_play is a free function of the client crate (sound_playback.rs): the
+#     engine calls it on the game thread for every sound that starts or updates; it has no Game.
+#   * native_client_tick_post is `Game::native_client_tick_post`, "Client only" in its doc comment:
+#     it never runs on a server thread (the tick helper also checks native_window()).
+
+[[module]]
+id = "sound-bridge"
+file = "crates/horizon-client/src/sound_playback.rs"
+name = "homestead_sound_bridge"
+source = "sound_bridge.rs"
+visibility = "pub"
+
+[[module]]
+id = "sound-config"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_config"
+source = "sound_config.rs"
+
+[[module]]
+id = "sound-muffler"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_muffler"
+source = "sound_muffler.rs"
+
+[[module]]
+id = "sound-footsteps"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_footsteps"
+source = "sound_footsteps.rs"
+
+[[module]]
+id = "sound-ambient"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_ambient"
+source = "sound_ambient.rs"
+
+# Every sound that starts or updates: muffler first, then footsteps.
+[[injection]]
+id = "sound-play"
+target = "horizon_client_lib::sound_playback::native_sound_play"
+kind = "HEAD"
+helper = "sound_play_hook.rs"
+bindings = [
+  { name = "sound", ty = "&crate::sound_engine::SoundPlayback<'_>", value = "sound" },
+  { name = "volume", ty = "&mut f32", value = "&mut *volume" },
+  { name = "pitch", ty = "&mut f32", value = "&mut *pitch" },
+  { name = "cancel", ty = "&mut bool", value = "&mut *cancel" },
+]
+
+# End of every client tick: configuration, F9/F10, footstep snapshot, ambience, queued sounds.
+[[injection]]
+id = "sound-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "sound_tick_hook.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# Engine-patch mods (stage 27 "engine20"): Comforts (sleeping bags, hammocks), Peaceful Hunger, Grind Enchantments.
+# They stand on three local engine patches (stage4/engine-patches/20-sleep-host.ps1, 21-peaceful-hunger.ps1,
+# 22-grind-take.ps1). Append this file verbatim to mixins/homestead/horizon-mixin.toml and bump the bundle version
+# (see fragments/engine20.md). Module and injection ids are unique within the bundle (prefix engine20-).
+
+[[module]]
+id = "engine20-comforts"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_comforts"
+source = "comforts.rs"
+
+[[module]]
+id = "engine20-peaceful-hunger"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_peaceful_hunger"
+source = "peaceful_hunger.rs"
+
+# Grind Enchantments lives in the library crate next to stations.rs and menu.rs (its pure item logic and the
+# menu's take), not in game.rs.
+[[module]]
+id = "engine20-grind"
+file = "crates/horizon-client/src/stations.rs"
+name = "homestead_grind"
+source = "grind.rs"
+
+# Comforts: a bed block that is a sleeping bag or hammock never sets the respawn point. The hook only fires for
+# the single-player host with engine patch 20-sleep-host.ps1.
+[[injection]]
+id = "engine20-comforts-spawn"
+hook = "player_spawn_point_set"
+hook_version = 1
+kind = "HEAD"
+helper = "comforts_spawn.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "cause", ty = "&str", value = "cause" },
+  { name = "cancel", ty = "&mut bool", value = "&mut *cancel" },
+]
+
+# Peaceful Hunger: sets the engine switch from the config on the first server tick.
+[[injection]]
+id = "engine20-peaceful-hunger-tick"
+hook = "level_tick_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "peaceful_hunger_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# Grind Enchantments: an enchanted item beside a plain book answers with an enchanted book. The take is the
+# engine patch 22-grind-take.ps1 (menu.rs), which calls homestead_grind::plan again.
+[[injection]]
+id = "engine20-grind-result"
+target = "horizon_client_lib::stations::grindstone_result"
+kind = "HEAD"
+cancellable = true
+helper = "grind_result.rs"
+bindings = [
+  { name = "e", ty = "&Enchantments", value = "e" },
+  { name = "input", ty = "Option<&ItemStack>", value = "input" },
+  { name = "additional", ty = "Option<&ItemStack>", value = "additional" },
+]
+
+# `homestead status` (stage 22): read-only diagnostic command for play-test reports.
+# Append to mixins/homestead/horizon-mixin.toml together with a client rebuild (it adds Rust).
+
+[[module]]
+id = "homestead-status"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_status"
+source = "status.rs"
+
+[[injection]]
+id = "status-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "status_register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "status-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "status_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
 ]

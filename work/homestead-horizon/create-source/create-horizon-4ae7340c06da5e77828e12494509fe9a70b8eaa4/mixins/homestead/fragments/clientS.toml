@@ -1,0 +1,56 @@
+# Client mods, group S (sound; stage 20 slice): Extreme Sound Muffler, AmbientSounds, Presence
+# Footsteps. Append this file verbatim to mixins/homestead/horizon-mixin.toml (after the last
+# injection). Module and injection ids carry the prefix `sound-` and are unique in the bundle.
+#
+# Both hooks are CLIENT hooks:
+#   * native_sound_play is a free function of the client crate (sound_playback.rs): the
+#     engine calls it on the game thread for every sound that starts or updates; it has no Game.
+#   * native_client_tick_post is `Game::native_client_tick_post`, "Client only" in its doc comment:
+#     it never runs on a server thread (the tick helper also checks native_window()).
+
+[[module]]
+id = "sound-config"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_config"
+source = "sound_config.rs"
+
+[[module]]
+id = "sound-muffler"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_muffler"
+source = "sound_muffler.rs"
+
+[[module]]
+id = "sound-footsteps"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_footsteps"
+source = "sound_footsteps.rs"
+
+[[module]]
+id = "sound-ambient"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_sound_ambient"
+source = "sound_ambient.rs"
+
+# Every sound that starts or updates: muffler first, then footsteps.
+[[injection]]
+id = "sound-play"
+target = "horizon_client::sound_playback::native_sound_play"
+kind = "HEAD"
+helper = "sound_play_hook.rs"
+bindings = [
+  { name = "sound", ty = "&crate::sound_engine::SoundPlayback<'_>", value = "sound" },
+  { name = "volume", ty = "&mut f32", value = "&mut *volume" },
+  { name = "pitch", ty = "&mut f32", value = "&mut *pitch" },
+  { name = "cancel", ty = "&mut bool", value = "&mut *cancel" },
+]
+
+# End of every client tick: configuration, F9/F10, footstep snapshot, ambience, queued sounds.
+[[injection]]
+id = "sound-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+kind = "HEAD"
+helper = "sound_tick_hook.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

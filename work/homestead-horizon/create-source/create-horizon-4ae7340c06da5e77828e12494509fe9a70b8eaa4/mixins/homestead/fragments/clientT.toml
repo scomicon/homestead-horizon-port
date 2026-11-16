@@ -1,0 +1,63 @@
+# Client tooltips (stage20, group T): EnchantmentDescriptions, More Enchantment Info and Tooltip
+# Overhaul, rebuilt from public descriptions (module homestead_client_tooltips, client_tooltips.rs).
+# Append this file verbatim to mixins/homestead/horizon-mixin.toml (see fragments/clientT.md).
+# Every injection is an additional HEAD helper on a hook that is called on the window's Game
+# (tooltip drawing and the control socket's command line); nothing here runs on the server thread.
+
+[[module]]
+id = "client-tooltips"
+file = "crates/horizon-client/src/game.rs"
+name = "homestead_client_tooltips"
+source = "client_tooltips.rs"
+
+# The item tooltip's lines, built each frame; descriptions and info go under enchantment lines.
+[[injection]]
+id = "ctip-tooltip"
+hook = "tooltip"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_tooltip.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "stack", ty = "&horizon_client::items::ItemStack", value = "stack" },
+  { name = "lines", ty = "&mut Vec<(horizon_client::text::Text, u32)>", value = "&mut *lines" },
+]
+
+# The tooltip box's colours: the frame takes the item's rarity colour.
+[[injection]]
+id = "ctip-color"
+hook = "tooltip_color"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_color.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "stack", ty = "Option<&horizon_client::items::ItemStack>", value = "stack" },
+  { name = "background", ty = "&mut u32", value = "&mut *background" },
+  { name = "border_top", ty = "&mut u32", value = "&mut *border_top" },
+  { name = "border_bottom", ty = "&mut u32", value = "&mut *border_bottom" },
+]
+
+# `homestead tooltip ...`: switches, and the test aid that prints the held item's tooltip lines.
+[[injection]]
+id = "ctip-register"
+hook = "register_commands"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::mod_api::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "ctip-command"
+hook = "perform_command"
+hook_version = 1
+kind = "HEAD"
+helper = "ctip_command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::mod_api::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
